@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — What do grades mean?</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f3f0f8;
+    color: #1e0a2e;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1.5rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 0.4rem;
+    color: #1e0a2e;
+  }
+
+  .subtitle {
+    color: #7c6e8a;
+    font-size: 0.9rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .card {
+    background: #fdfcff;
+    border: 1px solid #d8cce8;
+    border-radius: 16px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 4px 24px rgba(30,10,46,0.1);
+    margin-bottom: 1.25rem;
+  }
+
+  .card h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card p {
+    font-size: 0.85rem;
+    color: #7c6e8a;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
+  .stats {
+    background: #f3f0f8;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    color: #7c6e8a;
+    margin-bottom: 1.25rem;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stats strong { color: #1e0a2e; }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  .btn-danger {
+    background: #7f1d1d;
+    color: white;
+  }
+  .btn-danger:hover { background: #991b1b; transform: translateY(-1px); }
+  .btn-danger:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    background: transparent;
+    color: #7c6e8a;
+    border: 1.5px solid #d8cce8;
+    margin-top: 0.5rem;
+  }
+  .btn-secondary:hover { border-color: #6b21a8; color: #6b21a8; }
+
+  .log {
+    background: #1e0a2e;
+    color: #c084fc;
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    display: none;
+  }
+
+  .log.visible { display: block; }
+
+  .confirm-box {
+    background: #fff7ed;
+    border: 1.5px solid #fed7aa;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: #7c2d12;
+    margin-bottom: 1rem;
+    display: none;
+    line-height: 1.5;
+  }
+
+  .confirm-box.visible { display: block; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-row .btn { width: auto; flex: 1; }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-votes { background: rgba(107,33,168,0.1); color: #6b21a8; }
+  .badge-stars { background: rgba(217,119,6,0.1); color: #d97706; }
+</style>
+</head>
+<body>
+
+<h1>Admin Panel</h1>
+<p class="subtitle">What do grades mean? — Data management</p>
+
+<!-- VOTES CARD -->
+<div class="card">
+  <h2><span class="badge badge-votes">Votes</span> Pairwise comparison data</h2>
+  <p>All head-to-head comparisons submitted by participants. Deleting this resets all Elo rankings.</p>
+  <div class="stats" id="votesStats">Loading...</div>
+
+  <div class="confirm-box" id="votesConfirm">
+    ⚠️ Are you sure? This will permanently delete all <strong id="votesConfirmCount"></strong> vote records. Rankings will reset to zero. This cannot be undone.
+    <div class="btn-row" style="margin-top:0.75rem;">
+      <button class="btn btn-danger" onclick="deleteAll('votes')">Yes, delete all votes</button>
+      <button class="btn btn-secondary" onclick="cancelConfirm('votes')">Cancel</button>
+    </div>
+  </div>
+
+  <button class="btn btn-danger" id="votesBtn" onclick="confirmDelete('votes')">🗑 Wipe all votes</button>
+  <div class="log" id="votesLog"></div>
+</div>
+
+<!-- STARS CARD -->
+<div class="card">
+  <h2><span class="badge badge-stars">Stars</span> Starred schema data</h2>
+  <p>All schemas starred by participants on the favorites screen.</p>
+  <div class="stats" id="starsStats">Loading...</div>
+
+  <div class="confirm-box" id="starsConfirm">
+    ⚠️ Are you sure? This will permanently delete all <strong id="starsConfirmCount"></strong> star records. This cannot be undone.
+    <div class="btn-row" style="margin-top:0.75rem;">
+      <button class="btn btn-danger" onclick="deleteAll('stars')">Yes, delete all stars</button>
+      <button class="btn btn-secondary" onclick="cancelConfirm('stars')">Cancel</button>
+    </div>
+  </div>
+
+  <button class="btn btn-danger" id="starsBtn" onclick="confirmDelete('stars')">🗑 Wipe all stars</button>
+  <div class="log" id="starsLog"></div>
+</div>
+
+<!-- REFRESH -->
+<button class="btn btn-secondary" style="max-width:480px; width:100%;" onclick="loadStats()">↻ Refresh counts</button>
+
+<script>
+const AIRTABLE_TOKEN = 'patX0ug2HfD80YfUl.64c6e048a2bfb39d210eb0754cf453f2f6337346fb086626137840d68db5efdc';
+const AIRTABLE_BASE  = 'app8VFkeG7yi7lAhx';
+const TABLES = ['votes', 'stars'];
+
+// ── LOAD STATS ────────────────────────────────────────────────────────────
+async function loadStats() {
+  for (const table of TABLES) {
+    document.getElementById(`${table}Stats`).textContent = 'Loading...';
+    try {
+      const records = await fetchAllRecords(table);
+      document.getElementById(`${table}Stats`).innerHTML =
+        `<strong>${records.length}</strong> record${records.length !== 1 ? 's' : ''} in this table`;
+    } catch(e) {
+      document.getElementById(`${table}Stats`).textContent = 'Could not load — check token/base ID';
+    }
+  }
+}
+
+async function fetchAllRecords(table) {
+  let records = [];
+  let offset = null;
+  do {
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${table}?pageSize=100`
+      + (offset ? `&offset=${offset}` : '');
+    const res  = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    records = records.concat(data.records || []);
+    offset  = data.offset || null;
+  } while (offset);
+  return records;
+}
+
+// ── CONFIRM / CANCEL ──────────────────────────────────────────────────────
+async function confirmDelete(table) {
+  const records = await fetchAllRecords(table);
+  document.getElementById(`${table}ConfirmCount`).textContent = records.length;
+  document.getElementById(`${table}Confirm`).classList.add('visible');
+  document.getElementById(`${table}Btn`).style.display = 'none';
+}
+
+function cancelConfirm(table) {
+  document.getElementById(`${table}Confirm`).classList.remove('visible');
+  document.getElementById(`${table}Btn`).style.display = 'block';
+}
+
+// ── DELETE ALL ────────────────────────────────────────────────────────────
+async function deleteAll(table) {
+  const log     = document.getElementById(`${table}Log`);
+  const confirm = document.getElementById(`${table}Confirm`);
+  confirm.classList.remove('visible');
+  log.classList.add('visible');
+  log.textContent = `Fetching all ${table} records...\n`;
+
+  try {
+    const records = await fetchAllRecords(table);
+    log.textContent += `Found ${records.length} records. Deleting...\n`;
+
+    // Airtable delete API accepts max 10 records per request
+    const chunks = [];
+    for (let i = 0; i < records.length; i += 10)
+      chunks.push(records.slice(i, i + 10));
+
+    let deleted = 0;
+    for (const chunk of chunks) {
+      const ids    = chunk.map(r => r.id);
+      const params = ids.map(id => `records[]=${id}`).join('&');
+      const res    = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE}/${table}?${params}`, {
+        method:  'DELETE',
+        headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` }
+      });
+      const data = await res.json();
+      deleted += (data.records || []).length;
+      log.textContent += `Deleted ${deleted} / ${records.length}...\n`;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    log.textContent += `✓ Done! All ${deleted} ${table} records deleted.\n`;
+    document.getElementById(`${table}Btn`).style.display = 'block';
+    loadStats();
+  } catch(e) {
+    log.textContent += `✗ Error: ${e.message}\n`;
+    document.getElementById(`${table}Btn`).style.display = 'block';
+  }
+}
+
+// Load on page open
+loadStats();
+</script>
+</body>
+</html>
