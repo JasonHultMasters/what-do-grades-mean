@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grading Schema Results — What do grades mean?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1e0a2e;
+    --paper: #f3f0f8;
+    --warm: #e2d9f0;
+    --accent: #6b21a8;
+    --accent-light: #9333ea;
+    --accent-bright: #c084fc;
+    --muted: #7c6e8a;
+    --card: #fdfcff;
+    --border: #d8cce8;
+    --shadow: rgba(30,10,46,0.13);
+    --green: #16a34a;
+    --star: #d97706;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 15% 40%, rgba(107,33,168,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 15%, rgba(192,132,252,0.1) 0%, transparent 55%),
+      radial-gradient(ellipse at 60% 90%, rgba(107,33,168,0.05) 0%, transparent 50%);
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 2.5rem 2rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #1e0a2e 0%, #3b0764 50%, #581c87 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(192,132,252,0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+  }
+  .panther-wrap {
+    flex-shrink: 0;
+    width: 72px;
+    height: 86px;
+    filter: drop-shadow(0 4px 14px rgba(107,33,168,0.35));
+  }
+  .header-text h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 0.3rem;
+    text-align: left;
+  }
+  .header-text p {
+    color: rgba(226,217,240,0.85);
+    font-size: 0.95rem;
+    font-weight: 300;
+    max-width: 420px;
+    line-height: 1.6;
+    text-align: left;
+  }
+  .header-take-survey {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.55rem 1.2rem;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    color: rgba(255,255,255,0.9);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .header-take-survey:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.4);
+  }
+  @media (max-width: 560px) {
+    .header-text h1, .header-text p { text-align: center; }
+    .header-inner { flex-direction: column; gap: 1rem; }
+  }
+
+  /* ── LOADING ── */
+  .loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1.5rem;
+  }
+  .spinner {
+    width: 44px;
+    height: 44px;
+    border: 3px solid var(--warm);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--muted);
+  }
+  .loading-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    opacity: 0.7;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+    display: none;
+  }
+  .main.ready { display: block; animation: fadeUp 0.5s ease both; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SUMMARY STATS ROW ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 12px var(--shadow);
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--ink);
+  }
+  .section-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    line-height: 1.4;
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem 1.25rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .filter-bar label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .filter-bar select {
+    padding: 0.45rem 2rem 0.45rem 0.75rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink);
+    background: white;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237c6e8a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .filter-bar select:focus { outline: none; border-color: var(--accent); }
+  .filter-reset {
+    margin-left: auto;
+    padding: 0.4rem 0.9rem;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-reset:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── TAB PILLS ── */
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .tab-pill {
+    padding: 0.45rem 1.1rem;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-pill.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .tab-pill:hover:not(.active) { border-color: var(--ink); color: var(--ink); }
+
+  /* Elo inline help button (sits inside the tab pill) */
+  .elo-help-inline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: inherit;
+    cursor: pointer;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.75;
+    transition: opacity 0.15s;
+  }
+  .elo-help-inline:hover { opacity: 1; }
+
+  /* Elo explainer box */
+  .elo-explain {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin: -0.5rem 0 1.25rem;
+    box-shadow: 0 4px 18px var(--shadow);
+    font-size: 0.87rem;
+    line-height: 1.65;
+    color: var(--ink);
+    animation: fadeSlideDown 0.2s ease both;
+  }
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .elo-explain strong { color: var(--accent); }
+  .elo-explain-close {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.76rem;
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0;
+  }
+  .elo-explain-close:hover { color: var(--accent); }
+
+
+
+  /* ── ELO RANKINGS ── */
+  .ranking-list { display: flex; flex-direction: column; gap: 0.6rem; }
+  .rank-item {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 1px 6px var(--shadow);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .rank-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--border);
+    border-radius: 12px 0 0 12px;
+    transition: background 0.2s;
+  }
+  .rank-item:hover { transform: translateX(4px); border-color: var(--accent); }
+  .rank-item:hover::before { background: var(--accent); }
+  .rank-item.rank-1::before { background: #f1c40f; }
+  .rank-item.rank-2::before { background: #95a5a6; }
+  .rank-item.rank-3::before { background: #e67e22; }
+  .rank-item.is-starred { border-color: var(--star); background: #fffbf0; }
+  .rank-item.is-starred::before { background: var(--star); }
+
+  .rank-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--border);
+    width: 2rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .rank-item.rank-1 .rank-num { color: #f1c40f; }
+  .rank-item.rank-2 .rank-num { color: #95a5a6; }
+  .rank-item.rank-3 .rank-num { color: #e67e22; }
+  .rank-name { flex: 1; font-weight: 500; font-size: 0.95rem; }
+  .rank-preview {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 260px;
+  }
+  .rank-name-wrap { flex: 1; min-width: 0; }
+  .rank-bar-wrap { width: 80px; height: 6px; background: var(--warm); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+  .rank-bar { height: 6px; background: var(--accent); border-radius: 3px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+  .rank-item.is-starred .rank-bar { background: var(--star); }
+  .rank-score {
+    font-size: 0.78rem;
+    color: var(--muted);
+    background: var(--warm);
+    padding: 0.2rem 0.55rem;
+    border-radius: 20px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .votes-badge { font-size: 0.75rem; color: var(--muted); flex-shrink: 0; }
+  .star-badge {
+    font-size: 0.72rem;
+    color: var(--star);
+    background: rgba(243,156,18,0.12);
+    padding: 0.18rem 0.55rem;
+    border-radius: 20px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .confidence-low {
+    font-size: 0.68rem;
+    color: #b45309;
+    background: rgba(180,83,9,0.08);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-weight: 500;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .consensus-badge {
+    font-size: 0.68rem;
+    color: var(--green);
+    background: rgba(22,163,74,0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .rank-item.is-consensus { border-color: rgba(22,163,74,0.4); }
+
+  /* ── HEAD-TO-HEAD GRID ── */
+  .h2h-section { margin-top: 3rem; }
+  .h2h-intro {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+  .h2h-table-wrap {
+    overflow-x: auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+  .h2h-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 500px;
+  }
+  .h2h-table th, .h2h-table td {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.78rem;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .h2h-table th {
+    background: #1e0a2e;
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+  .h2h-table td:first-child, .h2h-table th:first-child {
+    text-align: left;
+    padding-left: 1rem;
+    font-weight: 600;
+    background: rgba(30,10,46,0.04);
+    white-space: nowrap;
+  }
+  .h2h-cell-win  { background: rgba(22,163,74,0.12); color: #15803d; font-weight: 600; }
+  .h2h-cell-loss { background: rgba(220,38,38,0.08); color: #b91c1c; }
+  .h2h-cell-self { background: var(--warm); color: var(--muted); font-style: italic; font-size: 0.7rem; }
+  .h2h-cell-none { color: var(--border); }
+
+  /* ── DEPARTMENT BREAKDOWN ── */
+  .dept-section { margin-top: 3rem; }
+  .dept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .dept-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px var(--shadow);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .dept-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px var(--shadow); border-color: var(--accent); }
+  .dept-card-header {
+    background: linear-gradient(135deg, #1e0a2e, #3b0764);
+    color: white;
+    padding: 0.7rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .dept-name { font-size: 0.82rem; font-weight: 500; letter-spacing: 0.04em; }
+  .dept-vote-count {
+    font-size: 0.72rem;
+    color: rgba(192,132,252,0.9);
+    background: rgba(255,255,255,0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+  }
+  .dept-bar-list { padding: 0.75rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .dept-bar-row { display: flex; align-items: center; gap: 0.6rem; }
+  .dept-bar-label { font-size: 0.75rem; font-weight: 600; color: var(--ink); width: 60px; flex-shrink: 0; }
+  .dept-bar-track { flex: 1; height: 8px; background: var(--warm); border-radius: 4px; overflow: hidden; }
+  .dept-bar-fill { height: 8px; background: var(--accent); border-radius: 4px; transition: width 0.5s ease; }
+  .dept-bar-score { font-size: 0.7rem; color: var(--muted); width: 30px; text-align: right; flex-shrink: 0; }
+
+  /* ── REFLECTIONS ── */
+  .reflections-section { margin-top: 3rem; }
+  .reflection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+  .reflection-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 10px var(--shadow);
+    position: relative;
+    transition: all 0.2s;
+  }
+  .reflection-card:hover { border-color: var(--accent-bright); transform: translateY(-2px); }
+  .reflection-card::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    color: var(--warm);
+    position: absolute;
+    top: 0.5rem;
+    left: 0.75rem;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .reflection-text {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--ink);
+    margin-top: 1.5rem;
+    font-style: italic;
+  }
+  .reflection-meta {
+    margin-top: 0.9rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--warm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .reflection-who {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .reflection-starred {
+    font-size: 0.72rem;
+    color: var(--star);
+    background: rgba(243,156,18,0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+  }
+  .show-more-btn {
+    display: block;
+    margin: 1.5rem auto 0;
+    padding: 0.6rem 2rem;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .show-more-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── SCHEMA DETAIL MODAL ── */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(30,10,46,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal.show { display: flex; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    max-width: 560px;
+    width: 100%;
+    box-shadow: 0 24px 64px rgba(30,10,46,0.3);
+    animation: slideUp 0.25s ease both;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(24px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .modal-header {
+    background: linear-gradient(135deg, #1e0a2e, #3b0764);
+    color: white;
+    padding: 1.25rem 1.5rem;
+    border-radius: 18px 18px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  .modal-close {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.25); }
+  .modal-body { padding: 0; }
+  .schema-table { width: 100%; border-collapse: collapse; }
+  .schema-table tr { border-bottom: 1px solid var(--warm); }
+  .schema-table tr:last-child { border-bottom: none; }
+  .schema-table td { padding: 0.85rem 1.25rem; font-size: 0.9rem; line-height: 1.55; vertical-align: top; }
+  .schema-table td:first-child {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    width: 40px;
+    text-align: center;
+    border-right: 1px solid var(--warm);
+    background: rgba(245,240,232,0.5);
+  }
+  .schema-table tr:nth-child(1) td:first-child { color: #27ae60; }
+  .schema-table tr:nth-child(2) td:first-child { color: #2980b9; }
+  .schema-table tr:nth-child(3) td:first-child { color: #8e44ad; }
+  .schema-table tr:nth-child(4) td:first-child { color: #e67e22; }
+  .schema-table tr:nth-child(5) td:first-child { color: var(--accent); }
+  .modal-stats {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--paper);
+    border-radius: 0 0 18px 18px;
+    flex-wrap: wrap;
+  }
+  .modal-stat { text-align: center; flex: 1; min-width: 80px; }
+  .modal-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .modal-stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    margin-top: 0.15rem;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    color: var(--muted);
+    padding: 3rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+
+  /* ── SECTION DIVIDER ── */
+  .section-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 3rem 0;
+    position: relative;
+  }
+  .section-divider::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--paper);
+    padding: 0 0.75rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 640px) {
+    .main { padding: 1.5rem 1rem 3rem; }
+    .rank-preview { display: none; }
+    .rank-bar-wrap { display: none; }
+    .h2h-section { overflow-x: auto; }
+    .dept-grid { grid-template-columns: 1fr; }
+    .reflection-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="panther-wrap">
+      <svg viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="6" width="62" height="82" rx="5" fill="rgba(0,0,0,0.15)"/>
+        <rect x="7" y="3" width="62" height="82" rx="5" fill="#fdfcff"/>
+        <rect x="7" y="3" width="62" height="82" rx="5" stroke="#d8cce8" stroke-width="1.2"/>
+        <rect x="7" y="3" width="62" height="16" rx="5" fill="#6b21a8"/>
+        <rect x="7" y="11" width="62" height="8" fill="#6b21a8"/>
+        <rect x="16" y="8" width="28" height="3" rx="1.5" fill="rgba(255,255,255,0.9)"/>
+        <rect x="16" y="13" width="18" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+        <circle cx="58" cy="11" r="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+        <text x="58" y="15" text-anchor="middle" fill="white" font-size="7" font-family="serif" font-weight="bold">A</text>
+        <rect x="13" y="26" width="50" height="10" rx="2" fill="#f3f0f8"/>
+        <rect x="13" y="26" width="12" height="10" rx="2" fill="#6b21a8"/>
+        <text x="19" y="34" text-anchor="middle" fill="white" font-size="7" font-family="serif" font-weight="bold">A</text>
+        <rect x="29" y="29" width="28" height="2" rx="1" fill="#d8cce8"/>
+        <rect x="29" y="33" width="20" height="2" rx="1" fill="#e2d9f0"/>
+        <rect x="13" y="39" width="50" height="10" rx="2" fill="#f3f0f8"/>
+        <rect x="13" y="39" width="12" height="10" rx="2" fill="#7c3aed"/>
+        <text x="19" y="47" text-anchor="middle" fill="white" font-size="7" font-family="serif" font-weight="bold">B</text>
+        <rect x="29" y="42" width="24" height="2" rx="1" fill="#d8cce8"/>
+        <rect x="29" y="46" width="32" height="2" rx="1" fill="#e2d9f0"/>
+        <rect x="13" y="52" width="50" height="10" rx="2" fill="#f3f0f8"/>
+        <rect x="13" y="52" width="12" height="10" rx="2" fill="#9333ea"/>
+        <text x="19" y="60" text-anchor="middle" fill="white" font-size="7" font-family="serif" font-weight="bold">C</text>
+        <rect x="29" y="55" width="30" height="2" rx="1" fill="#d8cce8"/>
+        <rect x="29" y="59" width="18" height="2" rx="1" fill="#e2d9f0"/>
+        <rect x="13" y="65" width="50" height="10" rx="2" fill="#f3f0f8"/>
+        <rect x="13" y="65" width="12" height="10" rx="2" fill="#a855f7"/>
+        <text x="19" y="73" text-anchor="middle" fill="white" font-size="7" font-family="serif" font-weight="bold">D</text>
+        <rect x="29" y="68" width="20" height="2" rx="1" fill="#d8cce8"/>
+        <rect x="29" y="72" width="26" height="2" rx="1" fill="#e2d9f0"/>
+        <rect x="13" y="78" width="50" height="4" rx="2" fill="#f3f0f8"/>
+        <rect x="13" y="78" width="12" height="4" rx="2" fill="#c084fc"/>
+        <text x="19" y="81.5" text-anchor="middle" fill="white" font-size="5" font-family="serif" font-weight="bold">F</text>
+        <rect x="29" y="79.5" width="22" height="1.5" rx="0.75" fill="#d8cce8"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <h1>Community Results</h1>
+      <p>Explore how faculty ranked and starred the 8 grading schemas. Filter by department or grade band.</p>
+      <a href="index.html" class="header-take-survey">← Take the survey</a>
+    </div>
+  </div>
+</header>
+
+<!-- LOADING -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="spinner"></div>
+  <div class="loading-text">Fetching results…</div>
+  <div class="loading-sub">Pulling data from Airtable</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main" id="mainContent">
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="statRespondents">—</div>
+      <div class="stat-label">Respondents</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statVotes">—</div>
+      <div class="stat-label">Pairwise Votes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statStars">—</div>
+      <div class="stat-label">Schemas Starred</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statDepts">—</div>
+      <div class="stat-label">Departments</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-bar">
+    <label>Filter by</label>
+    <select id="filterDept" onchange="applyFilters()">
+      <option value="">All Departments</option>
+      <option>Admin/Other</option>
+      <option>English</option>
+      <option>History & Religion</option>
+      <option>Humanities</option>
+      <option>Journalism</option>
+      <option>IEC</option>
+      <option>Mathematics</option>
+      <option>Modern & Classical Languages</option>
+      <option>Performing Arts</option>
+      <option>Science</option>
+      <option>The Center</option>
+      <option>Visual Arts</option>
+    </select>
+    <select id="filterGrade" onchange="applyFilters()">
+      <option value="">All Grade Bands</option>
+      <option>5–6</option>
+      <option>7–8</option>
+      <option>9–10</option>
+      <option>11–12</option>
+      <option>N/A</option>
+    </select>
+    <button class="filter-reset" onclick="resetFilters()">Reset filters</button>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-pill active" id="tabElo"   onclick="switchTab('elo')">Pairwise Ranking <button class="elo-help-inline" onclick="event.stopPropagation(); toggleEloTooltip()" title="What is this?">?</button></button>
+    <button class="tab-pill"        id="tabStars" onclick="switchTab('stars')">Most Starred ★</button>
+    <button class="tab-pill"        id="tabH2H"   onclick="switchTab('h2h')">Head-to-Head</button>
+    <button class="tab-pill"        id="tabDepts" onclick="switchTab('depts')">By Department</button>
+    <button class="tab-pill"        id="tabNotes" onclick="switchTab('notes')">Reflections</button>
+  </div>
+
+  <!-- Elo explainer (hidden by default) -->
+  <div class="elo-explain" id="eloTooltip" style="display:none;">
+    <strong>What is "Pairwise Ranking"?</strong> Each time someone took the survey, they compared schemas head-to-head — picking which one they preferred in each matchup. We use an <strong>Elo scoring system</strong> (the same method used to rank chess players) to turn those picks into an overall ranking. Beating a highly-ranked schema earns more points than beating a lower-ranked one. The scores here reflect the collective preference of everyone who has participated so far.
+    <br><button class="elo-explain-close" onclick="toggleEloTooltip()">Got it — hide this</button>
+  </div>
+
+  <!-- PANEL: ELO -->
+  <div id="panelElo">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Overall Ranking</div>
+        <div class="section-sub">Schemas ranked by Elo score — click any row to read the full schema.</div>
+      </div>
+      <span id="eloVoteCount" style="font-size:0.8rem;color:var(--muted);"></span>
+    </div>
+    <div class="ranking-list" id="eloList"></div>
+  </div>
+
+  <!-- PANEL: STARS -->
+  <div id="panelStars" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Most Starred ★</div>
+        <div class="section-sub">After completing the survey, participants starred up to 2 schemas they'd genuinely accept.</div>
+      </div>
+    </div>
+    <div class="ranking-list" id="starsList"></div>
+  </div>
+
+  <!-- PANEL: HEAD-TO-HEAD -->
+  <div id="panelH2H" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Head-to-Head Matrix</div>
+        <div class="section-sub">Win/loss record for every pair that was matched. Click a schema name to read it.</div>
+      </div>
+    </div>
+    <p class="h2h-intro">Each cell shows wins — how often the row schema beat the column schema. Empty cells mean the pair wasn't compared yet.</p>
+    <div class="h2h-table-wrap">
+      <table class="h2h-table" id="h2hTable"></table>
+    </div>
+  </div>
+
+  <!-- PANEL: BY DEPARTMENT -->
+  <div id="panelDepts" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Rankings by Department</div>
+        <div class="section-sub">See how each department ranked the schemas. Click a card to filter the full ranking to that group.</div>
+      </div>
+    </div>
+    <div class="dept-grid" id="deptGrid"></div>
+  </div>
+
+  <!-- PANEL: REFLECTIONS -->
+  <div id="panelNotes" style="display:none;">
+    <div class="section-header">
+      <div>
+        <div class="section-title">What colleagues said</div>
+        <div class="section-sub">Anonymous reflections submitted after completing the survey.</div>
+      </div>
+      <span id="reflectionCount" style="font-size:0.8rem;color:var(--muted);"></span>
+    </div>
+    <div class="reflection-grid" id="reflectionGrid"></div>
+    <button class="show-more-btn" id="showMoreBtn" onclick="showMoreReflections()" style="display:none;">Show more</button>
+  </div>
+
+</div><!-- /main -->
+
+<!-- SCHEMA MODAL -->
+<div class="modal" id="schemaModal" role="dialog" aria-modal="true">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Schema</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <table class="schema-table" id="modalTable"></table>
+    </div>
+    <div class="modal-stats" id="modalStats"></div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────
+const AIRTABLE_TOKEN = 'patX0ug2HfD80YfUl.64c6e048a2bfb39d210eb0754cf453f2f6337346fb086626137840d68db5efdc';
+const AIRTABLE_BASE  = 'app8VFkeG7yi7lAhx';
+const VOTES_TABLE    = 'votes';
+const STARS_TABLE    = 'stars';
+const REFLECTIONS_TABLE = 'reflections';
+
+// ── SCHEMAS ───────────────────────────────────────────────────────────────
+const SCHEMAS = [
+  { id: 1, name: "Version 1", rows: [
+    { grade: 'A', desc: 'Exceptional; above expectations; comprehensive mastery of content' },
+    { grade: 'B', desc: 'Very good but not quite exceptional; better than average' },
+    { grade: 'C', desc: 'Adequate performance (effort demonstrated, but not consistently or frequently enough to indicate relative mastery)' },
+    { grade: 'D', desc: 'Minimal effort; rare or occasional demonstration of components of skills/course content' },
+    { grade: 'F', desc: 'Unacceptable performance; rarely to never demonstrating effort or capability' },
+  ]},
+  { id: 2, name: "Version 2", rows: [
+    { grade: 'A', desc: 'Excellence; consistently demonstrating high level of proficiency/mastery, including transfer of learned skill to new context' },
+    { grade: 'B', desc: 'Strong in some but not all areas; can execute practical skills with fluency, low ability to transfer' },
+    { grade: 'C', desc: 'Struggles with even practical skills; almost no transferability' },
+    { grade: 'D', desc: 'No transfer; very low fluency even in practical skills' },
+    { grade: 'F', desc: 'Not independent at all in this skill' },
+  ]},
+  { id: 3, name: "Version 3", rows: [
+    { grade: 'A', desc: 'Meets or exceeds standards; mastery, application, and transfer' },
+    { grade: 'B', desc: 'Meets many standards' },
+    { grade: 'C', desc: 'Meets about half of relevant standards' },
+    { grade: 'D', desc: 'Rarely meets standards' },
+    { grade: 'F', desc: 'Does not show understanding of standards' },
+  ]},
+  { id: 4, name: "Version 4", rows: [
+    { grade: 'A', desc: 'Above grade level; advanced' },
+    { grade: 'B', desc: 'Grade level; showing grade level acquisition' },
+    { grade: 'C', desc: 'Below grade level' },
+    { grade: 'D', desc: 'Well below grade level' },
+    { grade: 'F', desc: 'Not sufficient work to assess; unable to approach grade level work' },
+  ]},
+  { id: 5, name: "Version 5", rows: [
+    { grade: 'A', desc: 'Excellent work in all areas (Homework, Assessments, Participation)' },
+    { grade: 'B', desc: 'Good work; may reflect good work in all areas or imbalance across Homework, Assessments, and Participation' },
+    { grade: 'C', desc: 'Fair/Satisfactory; doing sufficiently to avoid academic probation' },
+    { grade: 'D', desc: 'Needs improvement; in need of support in several areas of the course' },
+    { grade: 'F', desc: 'Poor; in need of support in every area of the class' },
+  ]},
+  { id: 6, name: "Version 6", rows: [
+    { grade: 'A', desc: 'Demonstration of mastery 90% or greater in course content' },
+    { grade: 'B', desc: '80% to 89%' },
+    { grade: 'C', desc: '70% to 79%' },
+    { grade: 'D', desc: '60% to 69%' },
+    { grade: 'F', desc: '59% and lower' },
+  ]},
+  { id: 7, name: "Version 7", rows: [
+    { grade: 'A', desc: 'Consistent mastery; independently applying skills to a new setting and content' },
+    { grade: 'B', desc: 'Steady growth/development leading to some mastery of skills in the course with a little assistance' },
+    { grade: 'C', desc: 'Some growth/development leading to occasional mastery of the skills in the course, but with noticeable gaps' },
+    { grade: 'D', desc: 'Significant gaps in understanding of the course or significant pieces of work missing or incomplete' },
+    { grade: 'F', desc: 'A number of significant pieces of work are missing or incomplete and/or demonstrated little growth, skill development, mastery' },
+  ]},
+  { id: 8, name: "Version 8", rows: [
+    { grade: 'A', desc: 'Excellent; outstanding; exemplary; can be used as the example' },
+    { grade: 'B', desc: 'Very good; clear effort reflected in the work' },
+    { grade: 'C', desc: 'Good; some effort but needs fine-tuning' },
+    { grade: 'D', desc: 'Poor; likely rushed and done with minimal care' },
+    { grade: 'F', desc: 'Unacceptable work' },
+  ]},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let allVotes       = [];
+let allStars       = [];
+let allReflections = [];
+let currentTab     = 'elo';
+
+// ── FETCH ALL DATA ────────────────────────────────────────────────────────
+async function fetchAll(table, fields) {
+  const records = [];
+  let offset = null;
+  const fieldParams = fields.map(f => `fields%5B%5D=${encodeURIComponent(f)}`).join('&');
+  do {
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${table}?pageSize=100&${fieldParams}${offset ? '&offset='+offset : ''}`;
+    const res  = await fetch(url, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
+    const data = await res.json();
+    (data.records || []).forEach(r => records.push(r.fields));
+    offset = data.offset || null;
+  } while (offset);
+  return records;
+}
+
+async function loadData() {
+  try {
+    const [votes, stars, reflections] = await Promise.all([
+      fetchAll(VOTES_TABLE,       ['Winner ID','Loser ID','Discipline','Grade Level','Name']),
+      fetchAll(STARS_TABLE,       ['Schema ID','Discipline','Grade Level','Name']),
+      fetchAll(REFLECTIONS_TABLE, ['Name','Discipline','Grade Level','Reflection','Starred IDs']),
+    ]);
+
+    allVotes = votes.map(r => ({
+      winner_id:   parseInt(r['Winner ID']),
+      loser_id:    parseInt(r['Loser ID']),
+      discipline:  r['Discipline'] || '',
+      grade_level: r['Grade Level'] || '',
+      name:        r['Name'] || '',
+    }));
+
+    allStars = stars.map(r => {
+      const rawId = r['Schema ID'] ?? r['schema_id'] ?? r['SchemaID'];
+      const sid = Number(rawId);
+      return { schema_id: isNaN(sid) ? null : sid, discipline: r['Discipline'] || '', grade_level: r['Grade Level'] || '', name: r['Name'] || '' };
+    }).filter(r => r.schema_id !== null);
+
+    allReflections = reflections
+      .filter(r => r['Reflection'] && r['Reflection'].trim())
+      .map(r => ({
+        note:       r['Reflection'].trim(),
+        discipline: r['Discipline'] || '',
+        grade:      r['Grade Level'] || '',
+        name:       r['Name'] || '',
+        starred:    r['Starred IDs'] || '',
+      }));
+
+    renderSummaryStats();
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('mainContent').classList.add('ready');
+    applyFilters();
+
+  } catch(e) {
+    console.error(e);
+    document.getElementById('loadingScreen').innerHTML = `
+      <div style="text-align:center;padding:3rem;color:var(--muted);">
+        <div style="font-size:2rem;margin-bottom:1rem;">⚠️</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:0.5rem;">Could not load data</div>
+        <div style="font-size:0.85rem;">Check your Airtable token and base ID.</div>
+      </div>`;
+  }
+}
+
+function renderSummaryStats() {
+  const uniqueRespondents = new Set(allVotes.map(v => v.name).filter(Boolean)).size;
+  const uniqueDepts = new Set(allVotes.map(v => v.discipline).filter(Boolean)).size;
+  document.getElementById('statRespondents').textContent = uniqueRespondents || allStars.length || '—';
+  document.getElementById('statVotes').textContent       = allVotes.length;
+  document.getElementById('statStars').textContent       = allStars.length;
+  document.getElementById('statDepts').textContent       = uniqueDepts;
+  const statRefl = document.getElementById('statReflections');
+  if (statRefl) statRefl.textContent = allReflections.length;
+}
+
+// ── FILTER ────────────────────────────────────────────────────────────────
+function applyFilters() {
+  const dept  = document.getElementById('filterDept').value;
+  const grade = document.getElementById('filterGrade').value;
+  renderCurrentTab(dept, grade);
+}
+
+function resetFilters() {
+  document.getElementById('filterDept').value  = '';
+  document.getElementById('filterGrade').value = '';
+  applyFilters();
+}
+
+function renderCurrentTab(dept, grade) {
+  if (currentTab === 'elo')   renderElo(dept, grade);
+  if (currentTab === 'stars') renderStars(dept, grade);
+  if (currentTab === 'h2h')   renderH2H(dept, grade);
+  if (currentTab === 'depts') renderDepts(dept, grade);
+  if (currentTab === 'notes') renderReflections(dept, grade);
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function toggleEloTooltip() {
+  const t = document.getElementById('eloTooltip');
+  t.style.display = t.style.display === 'none' ? 'block' : 'none';
+}
+
+const TAB_IDS = { elo: 'Elo', stars: 'Stars', h2h: 'H2H', depts: 'Depts', notes: 'Notes' };
+
+function switchTab(tab) {
+  currentTab = tab;
+  Object.keys(TAB_IDS).forEach(t => {
+    const suffix = TAB_IDS[t];
+    document.getElementById('tab' + suffix)?.classList.toggle('active', t === tab);
+    const panel = document.getElementById('panel' + suffix);
+    if (panel) panel.style.display = t === tab ? '' : 'none';
+  });
+  // Hide Elo tooltip when switching away
+  if (tab !== 'elo') document.getElementById('eloTooltip').style.display = 'none';
+  applyFilters();
+}
+
+// ── ELO RANKING ───────────────────────────────────────────────────────────
+function eloUpdate(w, l, k=32) {
+  const e = 1 / (1 + Math.pow(10, (l - w) / 400));
+  return [w + k*(1-e), l + k*(0-(1-e))];
+}
+
+function computeElo(votes) {
+  const elo = {};
+  SCHEMAS.forEach(s => elo[s.id] = { id: s.id, name: s.name, score: 1000, wins: 0, losses: 0 });
+  votes.forEach(v => {
+    if (!elo[v.winner_id] || !elo[v.loser_id]) return;
+    const [wa, la] = eloUpdate(elo[v.winner_id].score, elo[v.loser_id].score);
+    elo[v.winner_id].score  = wa;
+    elo[v.loser_id].score   = la;
+    elo[v.winner_id].wins++;
+    elo[v.loser_id].losses++;
+  });
+  return Object.values(elo);
+}
+
+function renderElo(dept, grade) {
+  const filtered = filterVotes(dept, grade);
+  document.getElementById('eloVoteCount').textContent = `${filtered.length} votes`;
+
+  const list = document.getElementById('eloList');
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state">No votes yet for this filter.</div>`;
+    return;
+  }
+
+  const items    = computeElo(filtered).filter(x => x.wins + x.losses > 0).sort((a,b) => b.score - a.score);
+  const maxScore = items[0]?.score || 1100;
+  const minScore = items[items.length-1]?.score || 900;
+
+  // Confidence threshold
+  const avgMatchups  = items.length > 0 ? (filtered.length / items.length) * 2 : 0;
+  const lowThreshold = Math.max(3, Math.round(avgMatchups * 0.4));
+
+  // Consensus: top-half rank + above-average stars
+  const filteredStars = filterStars(dept, grade);
+  const starCount = {};
+  filteredStars.forEach(s => { starCount[s.schema_id] = (starCount[s.schema_id]||0) + 1; });
+  const starValues    = Object.values(starCount);
+  const avgStars      = starValues.length > 0 ? starValues.reduce((a,b) => a+b, 0) / items.length : 0;
+  const topHalfCutoff = Math.ceil(items.length / 2);
+
+  list.innerHTML = items.map((item, i) => {
+    const pct        = maxScore === minScore ? 50 : Math.round(((item.score - minScore)/(maxScore-minScore))*100);
+    const total      = item.wins + item.losses;
+    const sc         = starCount[item.id] || 0;
+    const schema     = SCHEMAS.find(s => s.id === item.id);
+    const preview    = schema?.rows[0]?.desc || '';
+    const isLowConf  = total < lowThreshold;
+    const isConsensus = i < topHalfCutoff && sc > avgStars && !isLowConf;
+
+    return `
+      <div class="rank-item rank-${i+1} ${isConsensus ? 'is-consensus' : ''}" onclick="openModal(${item.id})" tabindex="0" role="button">
+        <div class="rank-num">${i+1}</div>
+        <div class="rank-name-wrap">
+          <div class="rank-name">${item.name}</div>
+          <div class="rank-preview">${preview}</div>
+        </div>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%"></div></div>
+        <div class="rank-score">${Math.round(item.score)}</div>
+        ${isConsensus  ? `<div class="consensus-badge">✦ consensus</div>` : ''}
+        ${sc > 0       ? `<div class="star-badge">★ ${sc}</div>` : ''}
+        ${isLowConf    ? `<div class="confidence-low">few votes</div>` : ''}
+        <div class="votes-badge">${total}v</div>
+      </div>`;
+  }).join('');
+}
+
+// ── STARS ─────────────────────────────────────────────────────────────────
+function renderStars(dept, grade) {
+  const filtered = filterStars(dept, grade);
+  const list = document.getElementById('starsList');
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state">No starred schemas yet for this filter.</div>`;
+    return;
+  }
+
+  const counts = {};
+  SCHEMAS.forEach(s => counts[s.id] = { id: s.id, name: s.name, count: 0 });
+  filtered.forEach(s => { if (counts[s.schema_id]) counts[s.schema_id].count++; });
+  const sorted = Object.values(counts).filter(x => x.count > 0).sort((a,b) => b.count - a.count);
+  const max = sorted[0].count;
+
+  list.innerHTML = sorted.map((item, i) => {
+    const pct = Math.round((item.count / max) * 100);
+    return `
+      <div class="rank-item rank-${i+1} is-starred" onclick="openModal(${item.id})" tabindex="0" role="button">
+        <div class="rank-num">${i+1}</div>
+        <div class="rank-name-wrap">
+          <div class="rank-name">${item.name}</div>
+        </div>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%"></div></div>
+        <div class="star-badge">★ ${item.count}</div>
+      </div>`;
+  }).join('');
+}
+
+// ── HEAD-TO-HEAD ──────────────────────────────────────────────────────────
+function renderH2H(dept, grade) {
+  const filtered = filterVotes(dept, grade);
+  const panel = document.getElementById('panelH2H');
+
+  // Build win matrix: matrix[winnerId][loserId] = number of times winner beat loser
+  const matrix = {};
+  SCHEMAS.forEach(a => {
+    matrix[a.id] = {};
+    SCHEMAS.forEach(b => { matrix[a.id][b.id] = 0; });
+  });
+  filtered.forEach(v => {
+    if (matrix[v.winner_id] !== undefined && matrix[v.winner_id][v.loser_id] !== undefined) {
+      matrix[v.winner_id][v.loser_id]++;
+    }
+  });
+
+  const active = SCHEMAS.filter(s => filtered.some(v => v.winner_id === s.id || v.loser_id === s.id));
+
+  if (active.length === 0) {
+    panel.innerHTML = `
+      <div class="section-header">
+        <div><div class="section-title">Head-to-Head Matrix</div>
+        <div class="section-sub">Win/loss record for every pair that was matched. Click a schema name to read it.</div></div>
+      </div>
+      <p class="h2h-intro">Each cell shows wins — how often the row schema beat the column schema.</p>
+      <div class="empty-state">No matchup data for this filter.</div>`;
+    return;
+  }
+
+  const header = `<thead><tr><th>Schema ↓ vs →</th>${active.map(s => `<th>${s.name}</th>`).join('')}</tr></thead>`;
+  const rows = active.map(row => {
+    const cells = active.map(col => {
+      if (row.id === col.id) return `<td class="h2h-cell-self">—</td>`;
+      const wins   = matrix[row.id][col.id];
+      const losses = matrix[col.id][row.id];
+      const total  = wins + losses;
+      if (total === 0) return `<td class="h2h-cell-none">·</td>`;
+      const cls = wins > losses ? 'h2h-cell-win' : wins < losses ? 'h2h-cell-loss' : '';
+      return `<td class="${cls}" title="${wins} wins, ${losses} losses vs ${col.name}">${wins}/${total}</td>`;
+    }).join('');
+    return `<tr><td onclick="openModal(${row.id})" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border)">${row.name}</td>${cells}</tr>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="section-header">
+      <div><div class="section-title">Head-to-Head Matrix</div>
+      <div class="section-sub">Win/loss record for every pair that was matched. Click a schema name to read it.</div></div>
+    </div>
+    <p class="h2h-intro">Each cell shows <strong>wins/total</strong> — how often the row schema beat the column schema. Green = winning record, red = losing record.</p>
+    <div class="h2h-table-wrap"><table class="h2h-table" id="h2hTable"><thead><tr><th>Schema ↓ vs →</th>${active.map(s=>`<th>${s.name}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+// ── BY DEPARTMENT ─────────────────────────────────────────────────────────
+function renderDepts(dept, grade) {
+  const grid = document.getElementById('deptGrid');
+  const depts = {};
+  allVotes.forEach(v => {
+    if (!v.discipline) return;
+    if (grade && v.grade_level !== grade) return;
+    if (dept && v.discipline !== dept) return;
+    if (!depts[v.discipline]) depts[v.discipline] = [];
+    depts[v.discipline].push(v);
+  });
+
+  const deptNames = Object.keys(depts).sort();
+  if (deptNames.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">No department data for this filter.</div>`;
+    return;
+  }
+
+  grid.innerHTML = deptNames.map(d => {
+    const dv = depts[d];
+    const items = computeElo(dv).filter(x => x.wins + x.losses > 0).sort((a,b) => b.score - a.score).slice(0, 4);
+    if (items.length === 0) return '';
+    const maxS = items[0].score, minS = items[items.length-1].score;
+    const bars = items.map(item => {
+      const pct = maxS === minS ? 50 : Math.round(((item.score - minS)/(maxS - minS))*100);
+      return `<div class="dept-bar-row">
+        <div class="dept-bar-label">${item.name}</div>
+        <div class="dept-bar-track"><div class="dept-bar-fill" style="width:${pct}%"></div></div>
+        <div class="dept-bar-score">${Math.round(item.score)}</div>
+      </div>`;
+    }).join('');
+    return `<div class="dept-card" onclick="filterToDept('${d}')">
+      <div class="dept-card-header">
+        <span class="dept-name">${d}</span>
+        <span class="dept-vote-count">${dv.length} votes</span>
+      </div>
+      <div class="dept-bar-list">${bars}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterToDept(dept) {
+  document.getElementById('filterDept').value = dept;
+  switchTab('elo');
+}
+
+// ── REFLECTIONS ───────────────────────────────────────────────────────────
+let shownReflections = 6;
+
+function renderReflections(dept, grade) {
+  const filtered = allReflections.filter(r =>
+    (!dept  || r.discipline === dept) &&
+    (!grade || r.grade === grade)
+  );
+  document.getElementById('reflectionCount').textContent = `${filtered.length} notes`;
+  shownReflections = 6;
+  renderReflectionSlice(filtered, shownReflections);
+  const btn = document.getElementById('showMoreBtn');
+  btn.style.display = filtered.length > shownReflections ? '' : 'none';
+  btn.onclick = () => {
+    shownReflections += 6;
+    renderReflectionSlice(filtered, shownReflections);
+    if (shownReflections >= filtered.length) btn.style.display = 'none';
+  };
+}
+
+function renderReflectionSlice(filtered, count) {
+  const grid = document.getElementById('reflectionGrid');
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">No reflections for this filter yet.</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.slice(0, count).map(r => {
+    return `<div class="reflection-card">
+      <div class="reflection-text">${escHtml(r.note)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function filterVotes(dept, grade) {
+  return allVotes.filter(v =>
+    (!dept  || v.discipline === dept) &&
+    (!grade || v.grade_level === grade)
+  );
+}
+function filterStars(dept, grade) {
+  return allStars.filter(s =>
+    (!dept  || s.discipline === dept) &&
+    (!grade || s.grade_level === grade)
+  );
+}
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────
+function openModal(schemaId) {
+  const schema = SCHEMAS.find(s => s.id === schemaId);
+  if (!schema) return;
+
+  document.getElementById('modalTitle').textContent = schema.name;
+  document.getElementById('modalTable').innerHTML = schema.rows.map(r =>
+    `<tr><td>${r.grade}</td><td>${r.desc}</td></tr>`
+  ).join('');
+
+  // Compute quick stats for this schema
+  const wins   = allVotes.filter(v => v.winner_id === schemaId).length;
+  const losses = allVotes.filter(v => v.loser_id  === schemaId).length;
+  const stars  = allStars.filter(s => s.schema_id  === schemaId).length;
+  const winPct = wins + losses > 0 ? Math.round((wins/(wins+losses))*100) : null;
+
+  document.getElementById('modalStats').innerHTML = `
+    <div class="modal-stat"><div class="modal-stat-num">${wins+losses}</div><div class="modal-stat-label">Matchups</div></div>
+    <div class="modal-stat"><div class="modal-stat-num">${wins}</div><div class="modal-stat-label">Wins</div></div>
+    <div class="modal-stat"><div class="modal-stat-num">${winPct !== null ? winPct+'%' : '—'}</div><div class="modal-stat-label">Win Rate</div></div>
+    <div class="modal-stat"><div class="modal-stat-num">${stars}</div><div class="modal-stat-label">Stars</div></div>
+  `;
+
+  document.getElementById('schemaModal').classList.add('show');
+  document.onkeydown = e => { if (e.key === 'Escape') closeModal(); };
+}
+function closeModal() {
+  document.getElementById('schemaModal').classList.remove('show');
+  document.onkeydown = null;
+}
+document.getElementById('schemaModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('schemaModal')) closeModal();
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
