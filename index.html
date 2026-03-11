@@ -159,16 +159,6 @@
     color: var(--accent);
     font-weight: 500;
   }
-    font-size: 0.7rem;
-    background: var(--warm);
-    color: var(--muted);
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-    margin-left: 0.4rem;
-    text-transform: lowercase;
-    letter-spacing: 0;
-    font-weight: 400;
-  }
 
   input, select {
     width: 100%;
@@ -594,18 +584,6 @@
     margin-bottom: 0.9rem;
   }
 
-  .reflection-row {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-
-  .reflection-row label {
-    margin: 0;
-  }
-
   textarea.reflection-input {
     width: 100%;
     min-height: 110px;
@@ -663,6 +641,7 @@
     display: flex;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
+    flex-wrap: wrap;
   }
 
   .tab-btn {
@@ -930,7 +909,7 @@
   }
   .rank-item.is-consensus { border-color: rgba(22,163,74,0.4); }
 
-  /* ── REFLECTIONS (in-survey) ── */
+  /* ── REFLECTIONS ── */
   .reflection-grid-s {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -962,17 +941,6 @@
     margin-top: 1.4rem;
     font-style: italic;
   }
-  .reflection-starred-s {
-    margin-top: 0.75rem;
-    padding-top: 0.65rem;
-    border-top: 1px solid var(--warm);
-    font-size: 0.72rem;
-    color: var(--star);
-    background: rgba(243,156,18,0.08);
-    padding: 0.2rem 0.55rem;
-    border-radius: 10px;
-    display: inline-block;
-  }
   .show-more-s {
     display: block;
     margin: 1.25rem auto 0;
@@ -988,67 +956,62 @@
   }
   .show-more-s:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* ── LOADING OVERLAY ── */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(243,240,248,0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+    gap: 1rem;
+  }
+  .loading-overlay.hidden { display: none; }
+  .loading-spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-overlay p { color: var(--muted); font-size: 0.9rem; }
+
   /* ── MOBILE ── */
   @media (max-width: 640px) {
-
-    /* Header */
     .header-inner { gap: 0.75rem; padding: 0 0.5rem; }
     .panther-wrap { width: 52px; height: 80px; }
     .header-text h1 { font-size: 1.3rem; }
     .header-text p { font-size: 0.82rem; }
-
-    /* Screens */
     .screen { padding: 1.25rem 0.9rem; }
-
-    /* Info card */
     .info-card { padding: 1.5rem 1.25rem; }
     .info-card h2 { font-size: 1.2rem; }
-
-    /* Voting — stack cards vertically */
     .vs-row { grid-template-columns: 1fr; gap: 0.75rem; }
     .vs-label { padding-top: 0; font-size: 1rem; }
     .vote-meta h2 { font-size: 1.1rem; }
-
-    /* Schema tables — tighter text on mobile */
     .schema-table td, .fav-table td { padding: 0.55rem 0.7rem; font-size: 0.82rem; }
-    .schema-table td:first-child, .fav-table td:first-child {
-      font-size: 0.95rem;
-      width: 28px;
-      min-width: 28px;
-    }
-
-    /* Pick button */
+    .schema-table td:first-child, .fav-table td:first-child { font-size: 0.95rem; width: 28px; min-width: 28px; }
     .pick-btn { margin: 0.6rem; width: calc(100% - 1.2rem); font-size: 0.8rem; padding: 0.55rem; }
-
-    /* Favorites grid */
     .fav-grid { grid-template-columns: 1fr; }
     .fav-header h2 { font-size: 1.3rem; }
-
-    /* Results header — stack vertically */
     .results-header { flex-direction: column; gap: 0.75rem; }
     .results-header h2 { font-size: 1.3rem; }
-    .results-tabs { flex-wrap: wrap; }
     .filter-row { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
     .filter-row select { width: 100%; }
-
-    /* Rank items — hide bar and votes on small screens */
     .rank-bar-wrap { display: none; }
     .votes-badge { display: none; }
     .rank-item { padding: 0.75rem 1rem; gap: 0.75rem; }
     .rank-num { font-size: 1.1rem; width: 1.6rem; }
     .rank-name { font-size: 0.88rem; }
-
-    /* Done card */
     .done-card { padding: 2rem 1.25rem; }
     .done-card h2 { font-size: 1.4rem; }
-
-    /* Buttons */
     .btn-next { padding: 0.8rem 2rem; font-size: 0.9rem; }
     .btn-submit { padding: 0.8rem 2rem; font-size: 0.9rem; width: 100%; }
     .btn-primary { font-size: 0.95rem; }
   }
 
-  /* ── VERY SMALL SCREENS ── */
   @media (max-width: 380px) {
     .header-text h1 { font-size: 1.1rem; }
     .panther-wrap { display: none; }
@@ -1104,56 +1067,49 @@
   .modal-body { padding: 1rem 1.25rem 1.25rem; }
   .results-clickable { cursor: pointer; }
   .results-clickable:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
-
 </style>
 </head>
 <body>
 
+<!-- Loading overlay -->
+<div class="loading-overlay hidden" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <p>Building your comparisons…</p>
+</div>
+
 <header>
   <div class="header-inner">
     <div class="panther-wrap">
-      <!-- Report card illustration -->
       <svg viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Paper shadow -->
         <rect x="10" y="6" width="62" height="82" rx="5" fill="rgba(0,0,0,0.15)"/>
-        <!-- Paper body -->
         <rect x="7" y="3" width="62" height="82" rx="5" fill="#fdfcff"/>
         <rect x="7" y="3" width="62" height="82" rx="5" stroke="#d8cce8" stroke-width="1.2"/>
-        <!-- Top color bar -->
         <rect x="7" y="3" width="62" height="16" rx="5" fill="#6b21a8"/>
         <rect x="7" y="11" width="62" height="8" fill="#6b21a8"/>
-        <!-- Header text lines -->
         <rect x="16" y="8" width="28" height="3" rx="1.5" fill="rgba(255,255,255,0.9)"/>
         <rect x="16" y="13" width="18" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
-        <!-- Subtle school crest circle -->
         <circle cx="58" cy="11" r="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
         <text x="58" y="15" text-anchor="middle" fill="white" font-size="7" font-family="serif" font-weight="bold">A</text>
-        <!-- Grade rows -->
-        <!-- Row A -->
         <rect x="13" y="26" width="50" height="10" rx="2" fill="#f3f0f8"/>
         <rect x="13" y="26" width="12" height="10" rx="2" fill="#6b21a8"/>
         <text x="19" y="34" text-anchor="middle" fill="white" font-size="7" font-family="serif" font-weight="bold">A</text>
         <rect x="29" y="29" width="28" height="2" rx="1" fill="#d8cce8"/>
         <rect x="29" y="33" width="20" height="2" rx="1" fill="#e2d9f0"/>
-        <!-- Row B -->
         <rect x="13" y="39" width="50" height="10" rx="2" fill="#f3f0f8"/>
         <rect x="13" y="39" width="12" height="10" rx="2" fill="#7c3aed"/>
         <text x="19" y="47" text-anchor="middle" fill="white" font-size="7" font-family="serif" font-weight="bold">B</text>
         <rect x="29" y="42" width="24" height="2" rx="1" fill="#d8cce8"/>
         <rect x="29" y="46" width="32" height="2" rx="1" fill="#e2d9f0"/>
-        <!-- Row C -->
         <rect x="13" y="52" width="50" height="10" rx="2" fill="#f3f0f8"/>
         <rect x="13" y="52" width="12" height="10" rx="2" fill="#9333ea"/>
         <text x="19" y="60" text-anchor="middle" fill="white" font-size="7" font-family="serif" font-weight="bold">C</text>
         <rect x="29" y="55" width="30" height="2" rx="1" fill="#d8cce8"/>
         <rect x="29" y="59" width="18" height="2" rx="1" fill="#e2d9f0"/>
-        <!-- Row D -->
         <rect x="13" y="65" width="50" height="10" rx="2" fill="#f3f0f8"/>
         <rect x="13" y="65" width="12" height="10" rx="2" fill="#a855f7"/>
         <text x="19" y="73" text-anchor="middle" fill="white" font-size="7" font-family="serif" font-weight="bold">D</text>
         <rect x="29" y="68" width="20" height="2" rx="1" fill="#d8cce8"/>
         <rect x="29" y="72" width="26" height="2" rx="1" fill="#e2d9f0"/>
-        <!-- Row F -->
         <rect x="13" y="78" width="50" height="4" rx="2" fill="#f3f0f8"/>
         <rect x="13" y="78" width="12" height="4" rx="2" fill="#c084fc"/>
         <text x="19" y="81.5" text-anchor="middle" fill="white" font-size="5" font-family="serif" font-weight="bold">F</text>
@@ -1173,9 +1129,8 @@
   <div class="info-card">
     <h2>Before you begin</h2>
     <p class="subtitle">Two quick questions — then you'll compare grading schemas side by side. Takes about 2 minutes.</p>
-
     <div class="field-group">
-      <label>Name or email <span class="optional-tag">optional</span></label>
+      <label>Name or email <span style="font-size:0.7rem;background:var(--warm);color:var(--muted);padding:0.1rem 0.4rem;border-radius:4px;margin-left:0.4rem;text-transform:lowercase;letter-spacing:0;font-weight:400;">optional</span></label>
       <input type="text" id="nameInput" placeholder="Your name or email address">
     </div>
     <div class="field-group">
@@ -1185,12 +1140,12 @@
           <option value="">— Select your department —</option>
           <option>Admin/Other</option>
           <option>English</option>
-          <option>History & Religion</option>
+          <option>History &amp; Religion</option>
           <option>Humanities</option>
           <option>Journalism</option>
           <option>IEC</option>
           <option>Mathematics</option>
-          <option>Modern & Classical Languages</option>
+          <option>Modern &amp; Classical Languages</option>
           <option>Performing Arts</option>
           <option>Science</option>
           <option>The Center</option>
@@ -1223,34 +1178,32 @@
   <div class="info-card" style="max-width: 580px;">
     <h2>Where these schemas came from</h2>
     <p class="subtitle" style="margin-bottom: 1.5rem;">A little background before you dive in.</p>
-
     <div class="context-body">
       <p>At a recent Academic Committee meeting, members were asked to jot down what each letter grade means to them. Specifically: <em>"What quality of work does an A describe? A B? A C?"</em> — and so on through F.</p>
       <p>We collected 18 responses. We then used an AI language model to condense those responses into 8 distinct grading schemas. Each one preserves verbatim language from the original responses, but is a mashup — edited for directness and clarity.</p>
       <p>Your job is simple: compare them side by side and tell us which ones resonate. There are no right answers.</p>
     </div>
-
-    <button class="btn btn-primary" onclick="startVoting()">Start Comparing →</button>
+    <button class="btn btn-primary" id="startComparingBtn" onclick="startVoting()">Start Comparing →</button>
   </div>
 </div>
 
 <!-- SCREEN 2: Voting -->
 <div class="screen" id="screenVote">
   <div class="vote-meta">
-    <div class="round-label" id="roundLabel">Round 1 of 6</div>
+    <div class="round-label" id="roundLabel">Round 1 of 4</div>
     <h2>Which grading schema do you prefer?</h2>
   </div>
   <div class="vs-row">
     <div class="schema-card" id="cardA" onclick="selectSchema('A')">
       <div class="card-header">Option A</div>
       <table class="schema-table" id="tableA"></table>
-      <button class="pick-btn" onclick="selectSchema('A')">Choose This One</button>
+      <button class="pick-btn" onclick="event.stopPropagation(); selectSchema('A')">Choose This One</button>
     </div>
     <div class="vs-label">vs</div>
     <div class="schema-card" id="cardB" onclick="selectSchema('B')">
       <div class="card-header">Option B</div>
       <table class="schema-table" id="tableB"></table>
-      <button class="pick-btn" onclick="selectSchema('B')">Choose This One</button>
+      <button class="pick-btn" onclick="event.stopPropagation(); selectSchema('B')">Choose This One</button>
     </div>
   </div>
   <div class="next-wrap">
@@ -1271,16 +1224,13 @@
     </div>
   </div>
   <div class="fav-grid" id="favGrid"></div>
-
   <div class="reflection-box">
     <h3>What matters most? <span style="font-weight:400; color:var(--muted); font-size:0.9rem;">(optional)</span></h3>
     <p>After seeing these schemas side by side, what do you most want our grading language to communicate?<br><br>
       How did the process of comparing and choosing between them shape your thinking? Any feedback on this format is welcome.</p>
-
     <label style="margin-top:0.25rem;">Your note</label>
     <textarea class="reflection-input" id="reflectionInput" placeholder="Share your reflections here..."></textarea>
   </div>
-
   <div class="fav-submit-wrap">
     <button class="btn-submit" onclick="submitFavorites()">Submit My Rankings →</button>
     <div class="fav-hint">You can skip starring if you don't have a preference.</div>
@@ -1295,7 +1245,7 @@
     <p>Your preferences have been recorded. Want to see how your colleagues are ranking these schemas?</p>
     <div style="display:flex; flex-direction:column; gap:0.75rem;">
       <button class="btn-results" onclick="showResults()">View Current Rankings →</button>
-      <button class="btn-results" id="downloadPdfBtn" onclick="downloadPDF()" style="background:var(--card); color:var(--ink); border:1.5px solid var(--border);" >⬇ Download My Starred Schemas</button>
+      <button class="btn-results" id="downloadPdfBtn" onclick="downloadPDF()" style="background:var(--card); color:var(--ink); border:1.5px solid var(--border); display:none;">⬇ Download My Starred Schemas</button>
     </div>
   </div>
 </div>
@@ -1307,7 +1257,7 @@
     <div>
       <h2>Current Rankings</h2>
       <div class="results-tabs" style="margin-top:0.75rem;">
-        <button class="tab-btn active" id="tabElo"   onclick="switchTab('elo')">Pairwise Ranking <button class="elo-help-btn" onclick="event.stopPropagation(); toggleEloTooltip()" aria-label="What is this?">? What's this</button></button>
+        <button class="tab-btn active" id="tabElo" onclick="switchTab('elo')">Pairwise Ranking <button class="elo-help-btn" onclick="event.stopPropagation(); toggleEloTooltip()">? What's this</button></button>
         <button class="tab-btn" id="tabStars" onclick="switchTab('stars')">Most Starred ★</button>
         <button class="tab-btn" id="tabH2H"   onclick="switchTab('h2h')">Head-to-Head</button>
         <button class="tab-btn" id="tabDepts" onclick="switchTab('depts')">By Department</button>
@@ -1321,12 +1271,12 @@
           <option value="">All Departments</option>
           <option>Admin/Other</option>
           <option>English</option>
-          <option>History & Religion</option>
+          <option>History &amp; Religion</option>
           <option>Humanities</option>
           <option>Journalism</option>
           <option>IEC</option>
           <option>Mathematics</option>
-          <option>Modern & Classical Languages</option>
+          <option>Modern &amp; Classical Languages</option>
           <option>Performing Arts</option>
           <option>Science</option>
           <option>The Center</option>
@@ -1346,44 +1296,23 @@
     </div>
   </div>
 
-  <!-- Elo explainer tooltip -->
   <div class="elo-tooltip" id="eloTooltip">
     <strong>What is "Pairwise Ranking"?</strong> Each time someone took the survey, they compared schemas head-to-head — picking which one they preferred in each matchup. We use an <strong>Elo scoring system</strong> (the same method used to rank chess players) to turn all those individual picks into an overall ranking. Beating a highly-ranked schema earns more points than beating a lower-ranked one. The scores here reflect the collective preference of everyone who has participated so far.
     <br><button class="elo-close-btn" onclick="toggleEloTooltip()">Got it — hide this</button>
   </div>
 
-  <!-- ELO PANEL -->
-  <div id="panelElo">
-    <div class="ranking-list" id="rankingList"></div>
-  </div>
-
-  <!-- STARS PANEL -->
-  <div id="panelStars" style="display:none;">
-    <div class="ranking-list" id="starsListSurvey"></div>
-  </div>
-
-  <!-- H2H PANEL -->
-  <div id="panelH2H" style="display:none;">
-    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5;">Each cell shows how often the row schema beat the column schema in direct matchups. Click a schema name to read its full description.</p>
-    <div class="h2h-wrap"><table class="h2h-tbl" id="h2hTableSurvey"></table></div>
-  </div>
-
-  <!-- DEPTS PANEL -->
-  <div id="panelDepts" style="display:none;">
-    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5;">Elo rankings broken down by department, based on how each group voted.</p>
-    <div class="dept-grid-s" id="deptGridSurvey"></div>
-  </div>
-
-  <!-- REFLECTIONS PANEL -->
+  <div id="panelElo"><div class="ranking-list" id="rankingList"></div></div>
+  <div id="panelStars" style="display:none;"><div class="ranking-list" id="starsListSurvey"></div></div>
+  <div id="panelH2H"   style="display:none;"></div>
+  <div id="panelDepts" style="display:none;"><div class="dept-grid-s" id="deptGridSurvey"></div></div>
   <div id="panelNotes" style="display:none;">
     <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">Anonymous reflections from colleagues after completing the survey.</p>
     <div class="reflection-grid-s" id="reflectionGridSurvey"></div>
     <button class="show-more-s" id="showMoreSurveyBtn" style="display:none;">Show more</button>
   </div>
-
 </div>
 
-<!-- SCHEMA MODAL (used on results screen) -->
+<!-- SCHEMA MODAL -->
 <div class="modal" id="schemaModal" role="dialog" aria-modal="true" aria-labelledby="schemaModalTitle">
   <div class="modal-card" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -1405,7 +1334,7 @@ const STARS_TABLE    = 'stars';
 const REFLECTIONS_TABLE = 'reflections';
 
 const ROUNDS = 4;
-const STRATEGIC_RATIO = 0.70; // 70% strategic, 30% random
+const COVERAGE_THRESHOLD = 30;
 
 // ── SCHEMAS ───────────────────────────────────────────────────────────────
 const SCHEMAS = [
@@ -1498,25 +1427,19 @@ let userGrade      = '';
 let pairs          = [];
 let currentRound   = 0;
 let selectedChoice = null;
-let votes          = [];       // { winner_id, winner_name, loser_id, loser_name, ... }
-let seenSchemas    = [];       // all schemas shown during session
-let winnerSchemas  = [];       // schemas the user chose as winners
+let votes          = [];
+let seenSchemas    = [];
+let winnerSchemas  = [];
 let starredIds     = new Set();
-let activeTab      = 'elo';
 let reflectionText = '';
-let globalStarsCache = null;  // fetched from Airtable for results tab
-let globalVotesCache = null;  // fetched from Airtable for results Elo tab
-let globalReflectionsCache = null; // fetched from Airtable for reflections tab
+let currentTab     = 'elo';
+let globalStarsCache      = null;
+let globalVotesCache      = null;
+let globalReflectionsCache = null;
 
 // ── FORM VALIDATION ───────────────────────────────────────────────────────
 document.getElementById('disciplineSelect').addEventListener('change', validateForm);
 document.getElementById('gradeSelect').addEventListener('change', validateForm);
-// Reflection inputs (favorites screen)
-document.addEventListener('input', (e) => {
-  if (e.target && e.target.id === 'reflectionInput') reflectionText = e.target.value;
-});
-document.addEventListener('change', (e) => {
-});
 
 function validateForm() {
   const ok = document.getElementById('disciplineSelect').value
@@ -1538,33 +1461,53 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 
+function showLoading(show) {
+  document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
+}
+
 // ── VOTING ────────────────────────────────────────────────────────────────
 async function startVoting() {
-  // userName, userDiscipline, userGrade already set in showContext()
+  // Disable the button to prevent double-clicks
+  const btn = document.getElementById('startComparingBtn');
+  btn.disabled = true;
+  btn.textContent = 'Loading…';
+
   currentRound   = 0;
   votes          = [];
   seenSchemas    = [];
   winnerSchemas  = [];
   starredIds     = new Set();
 
-  // Show a brief loading state while we fetch global votes
-  const btn = document.getElementById('startBtn');
-  btn.textContent = 'Loading…';
-  btn.disabled = true;
+  showLoading(true);
 
-  const globalVotes = await fetchGlobalVotes();
-  pairs = generateSmartPairs(SCHEMAS, globalVotes, ROUNDS);
+  try {
+    const globalVotes = await fetchGlobalVotes();
+    pairs = generateSmartPairs(SCHEMAS, globalVotes, ROUNDS);
+  } catch(e) {
+    console.warn('Pair generation error, using random pairs:', e);
+    pairs = generateRandomPairs(SCHEMAS, ROUNDS);
+  }
 
-  btn.textContent = 'Begin Ranking →';
+  showLoading(false);
   btn.disabled = false;
+  btn.textContent = 'Start Comparing →';
 
   showScreen('screenVote');
   loadRound();
 }
 
-// Fetch all existing votes from Airtable to inform pair selection
+// Simple fallback: just pick random non-overlapping pairs
+function generateRandomPairs(schemas, count) {
+  const shuffled = [...schemas].sort(() => Math.random() - 0.5);
+  const result = [];
+  for (let i = 0; i < count * 2 && i + 1 < shuffled.length; i += 2) {
+    result.push([shuffled[i], shuffled[i + 1]]);
+  }
+  return result.slice(0, count);
+}
+
+// ── AIRTABLE FETCH ────────────────────────────────────────────────────────
 async function fetchGlobalVotes() {
-  if (AIRTABLE_TOKEN === 'YOUR_AIRTABLE_TOKEN_HERE') return [];
   try {
     const allRecords = [];
     let offset = null;
@@ -1584,14 +1527,12 @@ async function fetchGlobalVotes() {
     } while (offset);
     return allRecords;
   } catch(e) {
-    console.warn('Could not fetch global votes, falling back to random:', e);
+    console.warn('Could not fetch global votes:', e);
     return [];
   }
 }
 
-// Fetch all existing stars from Airtable (for results tab)
 async function fetchGlobalStars() {
-  if (AIRTABLE_TOKEN === 'YOUR_AIRTABLE_TOKEN_HERE') return [];
   try {
     const allRecords = [];
     let offset = null;
@@ -1615,9 +1556,7 @@ async function fetchGlobalStars() {
   }
 }
 
-// Fetch all reflections from Airtable (for reflections tab)
 async function fetchGlobalReflections() {
-  if (AIRTABLE_TOKEN === 'YOUR_AIRTABLE_TOKEN_HERE') return [];
   try {
     const allRecords = [];
     let offset = null;
@@ -1629,10 +1568,7 @@ async function fetchGlobalReflections() {
       const data = await res.json();
       (data.records || []).forEach(r => {
         const note = (r.fields['Reflection'] || '').trim();
-        if (note) allRecords.push({
-          note,
-          starred: r.fields['Starred IDs'] || '',
-        });
+        if (note) allRecords.push({ note, starred: r.fields['Starred IDs'] || '' });
       });
       offset = data.offset || null;
     } while (offset);
@@ -1643,16 +1579,10 @@ async function fetchGlobalReflections() {
   }
 }
 
-// ── SMART HYBRID PAIR GENERATION ──────────────────────────────────────────
-// Guarantees all 8 schemas appear exactly once across 4 pairs (perfect matching)
-// Below COVERAGE_THRESHOLD respondents: prioritizes unseen pairs (coverage mode)
-// Above threshold: prioritizes close-Elo pairs (refinement mode)
-const COVERAGE_THRESHOLD = 30; // flip weights after this many respondents
-
+// ── SMART PAIR GENERATION ─────────────────────────────────────────────────
 function generateSmartPairs(schemas, globalVotes, count) {
   const pairKey = (a, b) => [Math.min(a,b), Math.max(a,b)].join('-');
 
-  // Count global seen counts per pair
   const allPairs = [];
   for (let i = 0; i < schemas.length; i++)
     for (let j = i + 1; j < schemas.length; j++)
@@ -1665,7 +1595,6 @@ function generateSmartPairs(schemas, globalVotes, count) {
     if (k in seenCounts) seenCounts[k]++;
   });
 
-  // Compute current global Elo scores
   const elo = {};
   schemas.forEach(s => elo[s.id] = 1000);
   globalVotes.forEach(v => {
@@ -1675,14 +1604,11 @@ function generateSmartPairs(schemas, globalVotes, count) {
     elo[v.loser_id]  = la;
   });
 
-  // Adaptive weights: coverage mode vs refinement mode
   const uniqueRespondents = new Set(globalVotes.map(v => v.name).filter(Boolean)).size;
   const inRefinementMode  = uniqueRespondents >= COVERAGE_THRESHOLD;
   const scarcityWeight    = inRefinementMode ? 0.20 : 0.50;
   const proximityWeight   = inRefinementMode ? 0.50 : 0.20;
-  // jitter fills the rest (always ~0.30) to keep some randomness
 
-  // Score every pair by strategic value
   const scoredPairs = allPairs.map(([a, b]) => {
     const seen           = seenCounts[pairKey(a.id, b.id)];
     const eloDiff        = Math.abs(elo[a.id] - elo[b.id]);
@@ -1692,13 +1618,10 @@ function generateSmartPairs(schemas, globalVotes, count) {
     return { pair: [a, b], score: scarcityScore * scarcityWeight + proximityScore * proximityWeight + jitter };
   });
 
-  // Sort best-scoring first
   scoredPairs.sort((a, b) => b.score - a.score);
 
-  // Greedy perfect matching: pick pairs that don't reuse any schema
   const usedIds = new Set();
   const result  = [];
-
   for (const { pair } of scoredPairs) {
     if (result.length >= count) break;
     const [a, b] = pair;
@@ -1709,9 +1632,7 @@ function generateSmartPairs(schemas, globalVotes, count) {
     }
   }
 
-  // Final shuffle so the order feels fresh each time
-  shuffle(result);
-  return result;
+  return shuffle(result);
 }
 
 function shuffle(arr) {
@@ -1722,19 +1643,18 @@ function shuffle(arr) {
   return arr;
 }
 
+// ── ROUND LOADING ─────────────────────────────────────────────────────────
 function loadRound() {
   selectedChoice = null;
   document.getElementById('cardA').classList.remove('selected');
   document.getElementById('cardB').classList.remove('selected');
   document.getElementById('nextBtn').classList.remove('visible');
 
-  // Show back button only after round 1
   const backBtn = document.getElementById('backBtn');
   backBtn.classList.toggle('visible', currentRound > 0);
 
   const [schemaA, schemaB] = pairs[currentRound];
 
-  // Restore previous selection if this round was already answered (going back and forward)
   const existingVote = votes[currentRound];
   if (existingVote) {
     const prevChoice = existingVote.winner_id === schemaA.id ? 'A' : 'B';
@@ -1744,7 +1664,6 @@ function loadRound() {
     document.getElementById('nextBtn').classList.add('visible');
   }
 
-  // Track unique seen schemas
   [schemaA, schemaB].forEach(s => {
     if (!seenSchemas.find(x => x.id === s.id)) seenSchemas.push(s);
   });
@@ -1759,9 +1678,7 @@ function loadRound() {
 
 function renderSchemaTable(tableId, schema) {
   const t = document.getElementById(tableId);
-  t.innerHTML = schema.rows.map(r => `
-    <tr><td>${r.grade}</td><td>${r.desc}</td></tr>
-  `).join('');
+  t.innerHTML = schema.rows.map(r => `<tr><td>${r.grade}</td><td>${r.desc}</td></tr>`).join('');
 }
 
 function selectSchema(choice) {
@@ -1780,11 +1697,12 @@ function prevRound() {
 }
 
 function nextRound() {
+  if (!selectedChoice) return;
   const [schemaA, schemaB] = pairs[currentRound];
   const winner = selectedChoice === 'A' ? schemaA : schemaB;
   const loser  = selectedChoice === 'A' ? schemaB : schemaA;
 
-  votes.push({
+  votes[currentRound] = {
     winner_id:   winner.id,
     winner_name: winner.name,
     loser_id:    loser.id,
@@ -1793,9 +1711,8 @@ function nextRound() {
     discipline:  userDiscipline,
     grade_level: userGrade,
     voted_at:    new Date().toISOString(),
-  });
+  };
 
-  // Track winning schema for favorites screen (replace if going forward over a previous pick)
   winnerSchemas[currentRound] = winner;
 
   currentRound++;
@@ -1812,7 +1729,6 @@ function nextRound() {
 const MAX_STARS = 2;
 
 function buildFavoritesScreen() {
-  // Deduplicate winners in case someone won twice (shouldn't happen with perfect matching but just in case)
   const uniqueWinners = [];
   const seen = new Set();
   for (const s of winnerSchemas) {
@@ -1856,62 +1772,36 @@ function updateStarCounter() {
   document.getElementById('starCountNum').textContent = count;
   const counter = document.getElementById('starCounter');
   counter.classList.toggle('has-stars', count > 0);
-
-  // Dim unstarred cards when limit reached
   const allCards = document.querySelectorAll('.fav-card');
-  allCards.forEach(card => {
-    card.classList.toggle('maxed-out', count >= MAX_STARS);
-  });
-  // Always keep starred cards un-dimmed
+  allCards.forEach(card => card.classList.toggle('maxed-out', count >= MAX_STARS));
   starredIds.forEach(id => {
     const c = document.getElementById(`fav-${id}`);
     if (c) c.classList.remove('maxed-out');
   });
 }
 
-function sortFavGrid() {
-  const grid = document.getElementById('favGrid');
-  const cards = Array.from(grid.children);
-  cards.sort((a, b) => {
-    const aStarred = a.classList.contains('starred') ? -1 : 1;
-    const bStarred = b.classList.contains('starred') ? -1 : 1;
-    return aStarred - bStarred;
-  });
-  cards.forEach(c => grid.appendChild(c));
-}
-
 async function submitFavorites() {
   document.getElementById('progressBar').style.width = '100%';
+  showLoading(true);
 
-  // Save all votes to Airtable
-  for (const v of votes) {
-    await saveVote(v);
-  }
-
-  // Save starred schemas
+  for (const v of votes) { await saveVote(v); }
   for (const schemaId of starredIds) {
     const schema = seenSchemas.find(s => s.id === schemaId);
     if (schema) await saveStar(schema);
   }
-
-  // Save final reflection (optional)
   await saveReflection();
 
+  showLoading(false);
   showScreen('screenDone');
-  // Show/hide PDF download button based on whether anything was starred
   document.getElementById('downloadPdfBtn').style.display = starredIds.size > 0 ? 'block' : 'none';
 }
 
-// ── AIRTABLE ──────────────────────────────────────────────────────────────
+// ── AIRTABLE SAVE ─────────────────────────────────────────────────────────
 async function saveVote(record) {
-  if (AIRTABLE_TOKEN === 'YOUR_AIRTABLE_TOKEN_HERE') return;
   try {
     await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE}/${VOTES_TABLE}`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ fields: {
         'Winner ID':    String(record.winner_id),
         'Winner Name':  record.winner_name,
@@ -1927,14 +1817,10 @@ async function saveVote(record) {
 }
 
 async function saveStar(schema) {
-  if (AIRTABLE_TOKEN === 'YOUR_AIRTABLE_TOKEN_HERE') return;
   try {
     await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE}/${STARS_TABLE}`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ fields: {
         'Schema ID':   String(schema.id),
         'Schema Name': schema.name,
@@ -1948,20 +1834,13 @@ async function saveStar(schema) {
 }
 
 async function saveReflection() {
-  // Reflection is optional; don't write empty rows
   const note = (document.getElementById('reflectionInput')?.value || '').trim();
   reflectionText = note;
-
   if (!note) return;
-  if (AIRTABLE_TOKEN === 'YOUR_AIRTABLE_TOKEN_HERE') return;
-
   try {
     await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE}/${REFLECTIONS_TABLE}`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ fields: {
         'Name':         userName,
         'Discipline':   userDiscipline,
@@ -1972,15 +1851,12 @@ async function saveReflection() {
         'Submitted At': new Date().toISOString(),
       }})
     });
-  } catch(e) { console.warn('Reflection save failed (table may not exist yet):', e); }
+  } catch(e) { console.warn('Reflection save failed:', e); }
 }
 
 // ── RESULTS ───────────────────────────────────────────────────────────────
-let currentTab = 'elo';
-
 function toggleEloTooltip() {
-  const t = document.getElementById('eloTooltip');
-  t.classList.toggle('show');
+  document.getElementById('eloTooltip').classList.toggle('show');
 }
 
 const TAB_IDS = { elo: 'Elo', stars: 'Stars', h2h: 'H2H', depts: 'Depts', notes: 'Notes' };
@@ -1989,38 +1865,32 @@ async function switchTab(tab) {
   currentTab = tab;
   Object.keys(TAB_IDS).forEach(t => {
     const suffix = TAB_IDS[t];
-    const btn = document.getElementById('tab' + suffix);
-    if (btn) btn.classList.toggle('active', t === tab);
+    const btn   = document.getElementById('tab' + suffix);
     const panel = document.getElementById('panel' + suffix);
+    if (btn)   btn.classList.toggle('active', t === tab);
     if (panel) panel.style.display = t === tab ? '' : 'none';
   });
-  // Hide Elo tooltip when switching away
   if (tab !== 'elo') document.getElementById('eloTooltip').classList.remove('show');
 
   const fetches = [];
-  if (tab === 'stars' && globalStarsCache === null) {
+  if (tab === 'stars' && globalStarsCache === null)
     fetches.push(fetchGlobalStars().then(s => { globalStarsCache = s; }));
-  }
-  if ((tab === 'elo' || tab === 'h2h' || tab === 'depts') && globalVotesCache === null) {
+  if (['elo','h2h','depts'].includes(tab) && globalVotesCache === null)
     fetches.push(fetchGlobalVotes().then(v => { globalVotesCache = v; }));
-  }
-  if (tab === 'notes' && globalReflectionsCache === null) {
+  if (tab === 'notes' && globalReflectionsCache === null)
     fetches.push(fetchGlobalReflections().then(r => { globalReflectionsCache = r; }));
-  }
+
   await Promise.all(fetches);
   renderResults();
 }
 
 async function showResults() {
   showScreen('screenResults');
-  // Prime global votes and stars so both tabs reflect real data
   const fetches = [];
-  if (globalVotesCache === null) {
+  if (globalVotesCache === null)
     fetches.push(fetchGlobalVotes().then(v => { globalVotesCache = v; }));
-  }
-  if (globalStarsCache === null) {
+  if (globalStarsCache === null)
     fetches.push(fetchGlobalStars().then(s => { globalStarsCache = s; }));
-  }
   await Promise.all(fetches);
   renderResults();
 }
@@ -2028,22 +1898,16 @@ async function showResults() {
 function renderResults() {
   const discipline = document.getElementById('filterDiscipline').value;
   const grade      = document.getElementById('filterGrade').value;
-  const list       = document.getElementById('rankingList');
-
-  if (currentTab === 'elo')   renderElo(discipline, grade, list);
+  if (currentTab === 'elo')   renderElo(discipline, grade);
   if (currentTab === 'stars') renderSurveyStars(discipline, grade);
   if (currentTab === 'h2h')   renderSurveyH2H(discipline, grade);
   if (currentTab === 'depts') renderSurveyDepts(discipline, grade);
   if (currentTab === 'notes') renderSurveyReflections();
 }
 
-function renderElo(discipline, grade, list) {
-  // Merge global votes from Airtable with the current session's votes
-  const allVotes = [
-    ...(globalVotesCache || []),
-    ...votes,
-  ];
-
+function renderElo(discipline, grade) {
+  const list = document.getElementById('rankingList');
+  const allVotes = [...(globalVotesCache || []), ...votes];
   const filtered = allVotes.filter(v =>
     (!discipline || v.discipline === discipline) &&
     (!grade      || v.grade_level === grade)
@@ -2056,44 +1920,37 @@ function renderElo(discipline, grade, list) {
 
   const elo = {};
   SCHEMAS.forEach(s => elo[s.id] = { id: s.id, name: s.name, score: 1000, wins: 0, losses: 0 });
-
   filtered.forEach(v => {
     if (!elo[v.winner_id] || !elo[v.loser_id]) return;
     const [wa, la] = eloUpdate(elo[v.winner_id].score, elo[v.loser_id].score);
-    elo[v.winner_id].score  = wa;
-    elo[v.loser_id].score   = la;
-    elo[v.winner_id].wins++;
-    elo[v.loser_id].losses++;
+    elo[v.winner_id].score = wa; elo[v.loser_id].score = la;
+    elo[v.winner_id].wins++; elo[v.loser_id].losses++;
   });
 
   const sorted   = Object.values(elo).filter(x => x.wins + x.losses > 0).sort((a, b) => b.score - a.score);
   const maxScore = sorted[0]?.score || 1100;
   const minScore = sorted[sorted.length - 1]?.score || 900;
 
-  // Confidence threshold: flag schemas with fewer than this many matchups
-  const totalMatchups = filtered.length;
-  const avgMatchups   = sorted.length > 0 ? totalMatchups / sorted.length * 2 : 0;
-  const lowThreshold  = Math.max(3, Math.round(avgMatchups * 0.4));
+  const avgMatchups  = sorted.length > 0 ? filtered.length / sorted.length * 2 : 0;
+  const lowThreshold = Math.max(3, Math.round(avgMatchups * 0.4));
 
-  // Consensus: top-half rank AND star count above average
   const filteredStars = (globalStarsCache || []).filter(s =>
     (!discipline || s.discipline === discipline) &&
     (!grade      || s.grade_level === grade)
   );
   const starCount = {};
   filteredStars.forEach(s => { starCount[s.schema_id] = (starCount[s.schema_id] || 0) + 1; });
-  const starValues   = Object.values(starCount);
-  const avgStars     = starValues.length > 0 ? starValues.reduce((a,b) => a+b, 0) / sorted.length : 0;
+  const starValues    = Object.values(starCount);
+  const avgStars      = starValues.length > 0 ? starValues.reduce((a,b) => a+b, 0) / sorted.length : 0;
   const topHalfCutoff = Math.ceil(sorted.length / 2);
 
   list.innerHTML = sorted.map((item, i) => {
-    const total     = item.wins + item.losses;
-    const pct       = maxScore === minScore ? 50 : Math.round(((item.score - minScore) / (maxScore - minScore)) * 100);
-    const isStarred = starredIds.has(item.id);
-    const isLowConf = total < lowThreshold;
-    const stars     = starCount[item.id] || 0;
+    const total       = item.wins + item.losses;
+    const pct         = maxScore === minScore ? 50 : Math.round(((item.score - minScore) / (maxScore - minScore)) * 100);
+    const isStarred   = starredIds.has(item.id);
+    const isLowConf   = total < lowThreshold;
+    const stars       = starCount[item.id] || 0;
     const isConsensus = i < topHalfCutoff && stars > avgStars && !isLowConf;
-
     return `
       <div class="rank-item results-clickable ${isStarred ? 'is-starred' : ''} ${isConsensus ? 'is-consensus' : ''}"
            onclick="openSchemaModal(${item.id})" tabindex="0" role="button" aria-label="View ${item.name}">
@@ -2104,19 +1961,16 @@ function renderElo(discipline, grade, list) {
         ${isConsensus ? `<div class="consensus-badge">✦ consensus</div>` : ''}
         ${isLowConf   ? `<div class="confidence-low">few votes</div>` : ''}
         <div class="votes-badge">${total}v</div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
 function renderSurveyStars(discipline, grade) {
   const list = document.getElementById('starsListSurvey');
-  // Count stars from Airtable (global) if available; fall back to local session stars
   const starCounts = {};
   SCHEMAS.forEach(s => starCounts[s.id] = { id: s.id, name: s.name, count: 0 });
 
-  const sourceStars = (globalStarsCache || []);
-  const filteredStars = sourceStars.filter(r =>
+  const filteredStars = (globalStarsCache || []).filter(r =>
     (!discipline || r.discipline === discipline) &&
     (!grade      || r.grade_level === grade)
   );
@@ -2148,55 +2002,43 @@ function renderSurveyStars(discipline, grade) {
       <div class="rank-name">${item.name}</div>
       <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.round((item.count / max) * 100)}%"></div></div>
       <div class="rank-star-badge">★ ${item.count}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function renderSurveyH2H(discipline, grade) {
+  const panel = document.getElementById('panelH2H');
   const allVotesMerged = [...(globalVotesCache || []), ...votes];
   const filtered = allVotesMerged.filter(v =>
     (!discipline || v.discipline === discipline) &&
     (!grade      || v.grade_level === grade)
   );
-  const panel = document.getElementById('panelH2H');
 
-  // Build win matrix: matrix[winnerId][loserId] = number of times winner beat loser
   const matrix = {};
-  SCHEMAS.forEach(a => {
-    matrix[a.id] = {};
-    SCHEMAS.forEach(b => { matrix[a.id][b.id] = 0; });
-  });
+  SCHEMAS.forEach(a => { matrix[a.id] = {}; SCHEMAS.forEach(b => { matrix[a.id][b.id] = 0; }); });
   filtered.forEach(v => {
-    if (matrix[v.winner_id] !== undefined && matrix[v.winner_id][v.loser_id] !== undefined) {
-      matrix[v.winner_id][v.loser_id]++;
-    }
+    if (matrix[v.winner_id]?.[v.loser_id] !== undefined) matrix[v.winner_id][v.loser_id]++;
   });
 
   const active = SCHEMAS.filter(s => filtered.some(v => v.winner_id === s.id || v.loser_id === s.id));
-
   if (active.length === 0) {
-    panel.innerHTML = `
-      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5;">Each cell shows how often the row schema beat the column schema in direct matchups.</p>
-      <div class="empty-state">No matchup data for this filter.</div>`;
+    panel.innerHTML = `<div class="empty-state">No matchup data for this filter.</div>`;
     return;
   }
 
   const rows = active.map(row => {
     const cells = active.map(col => {
       if (row.id === col.id) return `<td class="h2h-self">—</td>`;
-      const wins   = matrix[row.id][col.id];
-      const losses = matrix[col.id][row.id];
-      const total  = wins + losses;
+      const wins = matrix[row.id][col.id], losses = matrix[col.id][row.id], total = wins + losses;
       if (total === 0) return `<td class="h2h-none">·</td>`;
       const cls = wins > losses ? 'h2h-win' : wins < losses ? 'h2h-loss' : '';
-      return `<td class="${cls}" title="${wins} wins, ${losses} losses vs ${col.name}">${wins}/${total}</td>`;
+      return `<td class="${cls}">${wins}/${total}</td>`;
     }).join('');
     return `<tr><td onclick="openSchemaModal(${row.id})" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border)">${row.name}</td>${cells}</tr>`;
   }).join('');
 
   panel.innerHTML = `
     <p style="font-size:0.83rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5;">Each cell shows <strong>wins/total</strong> — how often the row schema beat the column schema. Green = winning record, red = losing record.</p>
-    <div class="h2h-wrap"><table class="h2h-tbl" id="h2hTableSurvey">
+    <div class="h2h-wrap"><table class="h2h-tbl">
       <thead><tr><th>Schema ↓ vs →</th>${active.map(s=>`<th>${s.name}</th>`).join('')}</tr></thead>
       <tbody>${rows}</tbody>
     </table></div>`;
@@ -2221,21 +2063,17 @@ function renderSurveyDepts(filterDiscipline, filterGrade) {
     return;
   }
 
-  const elo = {};
-  function eloForVotes(voteList) {
-    SCHEMAS.forEach(s => elo[s.id] = { id: s.id, name: s.name, score: 1000, wins: 0, losses: 0 });
-    voteList.forEach(v => {
-      if (!elo[v.winner_id] || !elo[v.loser_id]) return;
-      const [wa, la] = eloUpdate(elo[v.winner_id].score, elo[v.loser_id].score);
-      elo[v.winner_id].score = wa; elo[v.loser_id].score = la;
-      elo[v.winner_id].wins++; elo[v.loser_id].losses++;
-    });
-    return Object.values(elo);
-  }
-
   grid.innerHTML = deptNames.map(d => {
     const dv = depts[d];
-    const items = eloForVotes(dv).filter(x => x.wins + x.losses > 0).sort((a,b) => b.score - a.score).slice(0,4);
+    const eloMap = {};
+    SCHEMAS.forEach(s => eloMap[s.id] = { id: s.id, name: s.name, score: 1000, wins: 0, losses: 0 });
+    dv.forEach(v => {
+      if (!eloMap[v.winner_id] || !eloMap[v.loser_id]) return;
+      const [wa, la] = eloUpdate(eloMap[v.winner_id].score, eloMap[v.loser_id].score);
+      eloMap[v.winner_id].score = wa; eloMap[v.loser_id].score = la;
+      eloMap[v.winner_id].wins++; eloMap[v.loser_id].losses++;
+    });
+    const items = Object.values(eloMap).filter(x => x.wins + x.losses > 0).sort((a,b) => b.score - a.score).slice(0,4);
     if (items.length === 0) return '';
     const maxS = items[0].score, minS = items[items.length-1].score;
     const bars = items.map(item => {
@@ -2258,16 +2096,13 @@ let surveyShownReflections = 6;
 function renderSurveyReflections() {
   const grid = document.getElementById('reflectionGridSurvey');
   const all = globalReflectionsCache || [];
-
   if (all.length === 0) {
     grid.innerHTML = `<div class="empty-state">No reflections yet.</div>`;
     document.getElementById('showMoreSurveyBtn').style.display = 'none';
     return;
   }
-
   surveyShownReflections = 6;
   renderSurveyReflectionSlice(all, surveyShownReflections);
-
   const btn = document.getElementById('showMoreSurveyBtn');
   btn.style.display = all.length > surveyShownReflections ? '' : 'none';
   btn.onclick = () => {
@@ -2278,264 +2113,138 @@ function renderSurveyReflections() {
 }
 
 function renderSurveyReflectionSlice(all, count) {
-  const grid = document.getElementById('reflectionGridSurvey');
-  grid.innerHTML = all.slice(0, count).map(r => {
-    return `<div class="reflection-card-s">
-      <div class="reflection-text-s">${escHtml(r.note)}</div>
-    </div>`;
-  }).join('');
+  document.getElementById('reflectionGridSurvey').innerHTML = all.slice(0, count).map(r =>
+    `<div class="reflection-card-s"><div class="reflection-text-s">${escHtml(r.note)}</div></div>`
+  ).join('');
 }
 
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-
-  // Count stars from Airtable (global) if available; fall back to local session stars
-  const starCounts = {};
-  SCHEMAS.forEach(s => starCounts[s.id] = { id: s.id, name: s.name, count: 0 });
-
-  // Use globally fetched stars if we have them
-  const sourceStars = (globalStarsCache || []);
-  const filteredStars = sourceStars.filter(r =>
-    (!discipline || r.discipline === discipline) &&
-    (!grade      || r.grade_level === grade)
-  );
-
-  if (filteredStars.length > 0) {
-    filteredStars.forEach(r => {
-      const id = parseInt(r.schema_id);
-      if (starCounts[id]) starCounts[id].count++;
-    });
-  } else {
-    // Fall back to local session stars if filter matches current user
-    const userMatchesDiscipline = !discipline || userDiscipline === discipline;
-    const userMatchesGrade      = !grade      || userGrade === grade;
-
-    if (userMatchesDiscipline && userMatchesGrade) {
-      for (const id of starredIds) {
-        if (starCounts[id]) starCounts[id].count++;
-      }
-    }
-  }
-
-  const sorted = Object.values(starCounts).filter(x => x.count > 0).sort((a, b) => b.count - a.count);
-
-  if (sorted.length === 0) {
-    list.innerHTML = `<div class="empty-state">No starred schemas yet for this filter.</div>`;
-    return;
-  }
-
-  const max = sorted[0].count;
-  list.innerHTML = sorted.map((item, i) => `
-    <div class="rank-item is-starred results-clickable" onclick="openSchemaModal(${item.id})" tabindex="0" role="button" aria-label="View ${item.name}">
-      <div class="rank-num">${i + 1}</div>
-      <div class="rank-name">${item.name}</div>
-      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.round((item.count / max) * 100)}%"></div></div>
-      <div class="rank-star-badge">★ ${item.count}</div>
-    </div>
-  `).join('');
-}
-
-// ── RESULTS: SCHEMA MODAL ────────────────────────────────────────────────
+// ── SCHEMA MODAL ──────────────────────────────────────────────────────────
 function openSchemaModal(schemaId) {
   const schema = SCHEMAS.find(s => s.id === schemaId);
   if (!schema) return;
-
   document.getElementById('schemaModalTitle').textContent = schema.name;
-  const t = document.getElementById('schemaModalTable');
-  t.innerHTML = schema.rows.map(r => `<tr><td>${r.grade}</td><td>${r.desc}</td></tr>`).join('');
-
-  const modal = document.getElementById('schemaModal');
-  modal.classList.add('show');
-
-  // Close on escape
-  document.onkeydown = (e) => {
-    if (e.key === 'Escape') closeSchemaModal();
-  };
+  document.getElementById('schemaModalTable').innerHTML = schema.rows.map(r =>
+    `<tr><td>${r.grade}</td><td>${r.desc}</td></tr>`).join('');
+  document.getElementById('schemaModal').classList.add('show');
+  document.onkeydown = (e) => { if (e.key === 'Escape') closeSchemaModal(); };
 }
 
 function closeSchemaModal() {
-  const modal = document.getElementById('schemaModal');
-  modal.classList.remove('show');
+  document.getElementById('schemaModal').classList.remove('show');
   document.onkeydown = null;
 }
 
-// Click outside closes modal
 document.addEventListener('click', (e) => {
   const modal = document.getElementById('schemaModal');
-  if (!modal.classList.contains('show')) return;
-  if (e.target === modal) closeSchemaModal();
+  if (modal.classList.contains('show') && e.target === modal) closeSchemaModal();
 });
 
+// ── ELO MATH ──────────────────────────────────────────────────────────────
 function eloUpdate(winnerScore, loserScore, k = 32) {
   const expected = 1 / (1 + Math.pow(10, (loserScore - winnerScore) / 400));
-  return [
-    winnerScore + k * (1 - expected),
-    loserScore  + k * (0 - (1 - expected)),
-  ];
+  return [winnerScore + k * (1 - expected), loserScore + k * (0 - (1 - expected))];
 }
 
 // ── PDF DOWNLOAD ──────────────────────────────────────────────────────────
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'pt', format: 'letter' });
-
-  const margin = 48;
-  const pageW  = doc.internal.pageSize.getWidth();
-  const pageH  = doc.internal.pageSize.getHeight();
+  const margin = 48, pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight();
   const contentW = pageW - margin * 2;
   let y = margin;
 
-  const INK    = [30, 10, 46];
-  const MUTED  = [124, 110, 138];
-  const STAR   = [217, 119, 6];
-  const WARM   = [226, 217, 240];
+  const INK = [30,10,46], MUTED = [124,110,138], STAR = [217,119,6], WARM = [226,217,240];
   const GRADES = ['A','B','C','D','F'];
-  const GRADE_COLORS = [
-    [22, 163, 74],
-    [37, 99, 235],
-    [124, 58, 237],
-    [234, 88, 12],
-    [107, 33, 168],
-  ];
+  const GRADE_COLORS = [[22,163,74],[37,99,235],[124,58,237],[234,88,12],[107,33,168]];
 
-  // ── Header ──
-  doc.setFillColor(30, 10, 46);
-  doc.rect(0, 0, pageW, 72, 'F');
-  // Purple accent strip
-  doc.setFillColor(107, 33, 168);
-  doc.rect(0, 68, pageW, 4, 'F');
-
-  doc.setFont('helvetica', 'bold');
+  doc.setFillColor(30,10,46);
+  doc.rect(0,0,pageW,72,'F');
+  doc.setFillColor(107,33,168);
+  doc.rect(0,68,pageW,4,'F');
+  doc.setFont('helvetica','bold');
   doc.setFontSize(22);
-  doc.setTextColor(255, 255, 255);
+  doc.setTextColor(255,255,255);
   doc.text('My Starred Grading Schemas', margin, 44);
-
-  doc.setFont('helvetica', 'normal');
+  doc.setFont('helvetica','normal');
   doc.setFontSize(10);
-  doc.setTextColor(200, 190, 175);
+  doc.setTextColor(200,190,175);
   const dateLine = userName
     ? `${userName}  ·  ${userDiscipline}  ·  Grades ${userGrade}  ·  ${new Date().toLocaleDateString()}`
     : `${userDiscipline}  ·  Grades ${userGrade}  ·  ${new Date().toLocaleDateString()}`;
   doc.text(dateLine, margin, 60);
+  y = 104;
 
-  y = 72 + 32;
-
-  // ── Starred schemas ──
   const starred = seenSchemas.filter(s => starredIds.has(s.id));
+  starred.forEach(schema => {
+    const rowH = 38, gradeColW = 32, descColW = contentW - gradeColW;
+    const tableH = rowH * 5 + 30;
+    if (y + tableH + 24 > pageH - margin) { doc.addPage(); y = margin; }
 
-  starred.forEach((schema, idx) => {
-    const tableTop  = y;
-    const rowH      = 38;
-    const gradeColW = 32;
-    const descColW  = contentW - gradeColW;
-    const tableH    = rowH * 5 + 34; // 5 rows + header
-
-    // Check if we need a new page
-    if (y + tableH + 24 > pageH - margin) {
-      doc.addPage();
-      y = margin;
-    }
-
-    // Schema name header bar
-    doc.setFillColor(30, 10, 46);
+    const tableTop = y;
+    doc.setFillColor(30,10,46);
     doc.roundedRect(margin, y, contentW, 30, 4, 4, 'F');
-    // Purple left accent bar
-    doc.setFillColor(107, 33, 168);
+    doc.setFillColor(107,33,168);
     doc.roundedRect(margin, y, 5, 30, 2, 2, 'F');
-
-    doc.setFont('helvetica', 'bold');
+    doc.setFont('helvetica','bold');
     doc.setFontSize(11);
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(255,255,255);
     doc.text(schema.name, margin + 12, y + 20);
-
-    // Star badge
     doc.setFillColor(...STAR);
     doc.roundedRect(pageW - margin - 52, y + 6, 44, 18, 9, 9, 'F');
     doc.setFontSize(9);
-    doc.setTextColor(255, 255, 255);
     doc.text('★ Starred', pageW - margin - 48, y + 18);
-
     y += 30;
 
-    // Table rows
     schema.rows.forEach((row, ri) => {
-      const bg = ri % 2 === 0 ? [255, 253, 247] : [245, 240, 232];
+      const bg = ri % 2 === 0 ? [255,253,247] : [245,240,232];
       doc.setFillColor(...bg);
       doc.rect(margin, y, contentW, rowH, 'F');
-
-      // Grade column background
-      doc.setFillColor(245, 240, 232);
+      doc.setFillColor(245,240,232);
       doc.rect(margin, y, gradeColW, rowH, 'F');
-
-      // Grade letter
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('helvetica','bold');
       doc.setFontSize(14);
       doc.setTextColor(...GRADE_COLORS[ri]);
       doc.text(GRADES[ri], margin + gradeColW / 2, y + rowH / 2 + 5, { align: 'center' });
-
-      // Divider line between grade col and desc col
       doc.setDrawColor(...WARM);
       doc.setLineWidth(0.5);
       doc.line(margin + gradeColW, y, margin + gradeColW, y + rowH);
-
-      // Description text — wrap it
-      doc.setFont('helvetica', 'normal');
+      doc.setFont('helvetica','normal');
       doc.setFontSize(9);
       doc.setTextColor(...INK);
       const lines = doc.splitTextToSize(row.desc, descColW - 16);
-      const textY = lines.length === 1
-        ? y + rowH / 2 + 3
-        : y + rowH / 2 - (lines.length - 1) * 5 + 3;
+      const textY = lines.length === 1 ? y + rowH/2 + 3 : y + rowH/2 - (lines.length - 1) * 5 + 3;
       doc.text(lines, margin + gradeColW + 10, textY);
-
-      // Row bottom border
       doc.setDrawColor(...WARM);
       doc.line(margin, y + rowH, margin + contentW, y + rowH);
-
       y += rowH;
     });
 
-    // Table outer border
     doc.setDrawColor(...WARM);
     doc.setLineWidth(1);
     doc.rect(margin, tableTop + 30, contentW, rowH * 5);
-
-    y += 24; // gap between schemas
+    y += 24;
   });
 
-  // ── Reflection (optional) ──
-  const note = (reflectionText || (document.getElementById('reflectionInput')?.value || '')).trim();
-
-  if (note || rating) {
-    const blockH = 120;
-    if (y + blockH > pageH - margin) {
-      doc.addPage();
-      y = margin;
-    }
-
-    doc.setFont('helvetica', 'bold');
+  const note = reflectionText.trim();
+  if (note) {
+    if (y + 80 > pageH - margin) { doc.addPage(); y = margin; }
+    doc.setFont('helvetica','bold');
     doc.setFontSize(12);
     doc.setTextColor(...INK);
     doc.text('Reflection', margin, y + 18);
-
-    doc.setFont('helvetica', 'normal');
+    doc.setFont('helvetica','normal');
     doc.setFontSize(10);
-    doc.setTextColor(...MUTED);
-    if (rating) {
-      doc.text(`Experience rating: ${rating}/5`, margin, y + 36);
-    }
-
     doc.setTextColor(...INK);
-    const textY = y + (rating ? 52 : 36);
-    const wrapped = doc.splitTextToSize(note || '(no note)', contentW);
-    doc.text(wrapped, margin, textY);
-    y = textY + wrapped.length * 12 + 12;
+    const wrapped = doc.splitTextToSize(note, contentW);
+    doc.text(wrapped, margin, y + 36);
+    y = y + 36 + wrapped.length * 12 + 12;
   }
 
-  // ── Footer ──
-  doc.setFont('helvetica', 'normal');
+  doc.setFont('helvetica','normal');
   doc.setFontSize(8);
   doc.setTextColor(...MUTED);
   doc.text('Generated by What do grades mean?', margin, pageH - 24);
@@ -2543,7 +2252,6 @@ function downloadPDF() {
   const filename = userName
     ? `grading-schemas-${userName.replace(/\s+/g,'-').toLowerCase()}.pdf`
     : 'my-grading-schemas.pdf';
-
   doc.save(filename);
 }
 </script>
